@@ -41,7 +41,12 @@ def index(request):
         allProds.append([prod, range(1, nSlides + 1), nSlides])
 
     # 🔥 Fetch active carousel ads for homepage
-    ads = CarouselAd.objects.filter(is_active=True)
+    # Guard against rows with empty image values; template accesses ad.image.url.
+    ads = (
+        CarouselAd.objects.filter(is_active=True)
+        .exclude(image="")
+        .exclude(image__isnull=True)
+    )
 
     return render(request, "index.html", {
         "allProds": allProds,

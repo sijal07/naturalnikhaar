@@ -65,6 +65,7 @@ Home
       <div class="carousel-inner rounded-4 overflow-hidden premium-carousel-inner">
         {% for ad in ads %}
         <div class="carousel-item {% if forloop.first %}active{% endif %} carousel-fade-transition">
+          {% if ad.image %}
           <a href="{{ ad.link }}" class="premium-ad-link">
             <img src="{{ ad.image.url }}"
                  class="d-block w-100 premium-carousel-img"
@@ -72,6 +73,7 @@ Home
                  loading="lazy">
             <div class="carousel-overlay"></div>
           </a>
+          {% endif %}
           {% if ad.title %}
           
           {% endif %}
