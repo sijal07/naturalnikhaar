@@ -1,26 +1,26 @@
-"""ecommerce URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path, include, re_path
 from django.conf.urls.static import static
 from django.conf import settings
+from django.views.static import serve
+import os
 
+# Default to serving media only in DEBUG mode unless explicitly enabled.
+default_serve_media = "True" if settings.DEBUG else "False"
+serve_media = os.getenv("DJANGO_SERVE_MEDIA", default_serve_media).strip().lower() in ("1", "true", "yes", "on")
 
 urlpatterns = [
+    # Keep media route first so uploaded files are always reachable in local/dev runs.
+    # Disable in production by setting DJANGO_SERVE_MEDIA=False.
+    *(
+        [re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT})]
+        if serve_media
+        else []
+    ),
     path('admin/', admin.site.urls),
-    path('',include("ecommerceapp.urls")),
-    path('auth/',include("authcart.urls"))
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('', include("ecommerceapp.urls")),
+    path('auth/', include("authcart.urls")),
+]
+
+if settings.DEBUG or serve_media:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
