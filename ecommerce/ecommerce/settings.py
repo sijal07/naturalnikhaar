@@ -176,7 +176,12 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 if WHITENOISE_INSTALLED:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # Use non-manifest storage by default to avoid runtime 500s from missing
+    # manifest entries on platforms where static assets may drift across deploys.
+    STATICFILES_STORAGE = os.getenv(
+        "DJANGO_STATICFILES_STORAGE",
+        "whitenoise.storage.CompressedStaticFilesStorage",
+    )
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
