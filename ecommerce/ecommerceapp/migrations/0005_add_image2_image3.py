@@ -1,4 +1,4 @@
-from django.db import migrations, models
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
@@ -7,11 +7,6 @@ class Migration(migrations.Migration):
         ("ecommerceapp", "0004_remove_product_image_product_image1_product_image2_and_more"),
     ]
 
-    operations = [
-        # image2 was created by a previous migration; only add image3 here
-        migrations.AddField(
-            model_name="product",
-            name="image3",
-            field=models.ImageField(blank=True, null=True, upload_to="images/images"),
-        ),
-    ]
+    # image fields were already added in 0004; keep this migration as a no-op
+    # so existing production sqlite schemas do not fail with duplicate columns.
+    operations = []
