@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from ecommerceapp.models import Contact, Product, OrderUpdate, Orders, CarouselAd
@@ -23,36 +24,42 @@ except Exception as e:
 
 def index(request):
     query = request.GET.get("query", "").strip()
-    products_qs = Product.objects.all()
-    if query:
-        products_qs = products_qs.filter(
-            Q(product_name__icontains=query) |
-            Q(category__icontains=query) |
-            Q(subcategory__icontains=query) |
-            Q(desc__icontains=query)
+    try:
+        products_qs = Product.objects.all()
+        if query:
+            products_qs = products_qs.filter(
+                Q(product_name__icontains=query) |
+                Q(category__icontains=query) |
+                Q(subcategory__icontains=query) |
+                Q(desc__icontains=query)
+            )
+        allProds = []
+        catprods = products_qs.values("category", "id")
+        cats = {item["category"] for item in catprods}
+        for cat in cats:
+            prod = products_qs.filter(category=cat)
+            n = len(prod)
+            nSlides = n // 4 + (1 if n % 4 != 0 else 0)
+            allProds.append([prod, range(1, nSlides + 1), nSlides])
+
+        # Guard against rows with empty image values; template accesses ad.image.url.
+        ads = (
+            CarouselAd.objects.filter(is_active=True)
+            .exclude(image="")
+            .exclude(image__isnull=True)
         )
-    allProds = []
-    catprods = products_qs.values("category", "id")
-    cats = {item["category"] for item in catprods}
-    for cat in cats:
-        prod = products_qs.filter(category=cat)
-        n = len(prod)
-        nSlides = n // 4 + (1 if n % 4 != 0 else 0)
-        allProds.append([prod, range(1, nSlides + 1), nSlides])
 
-    # 🔥 Fetch active carousel ads for homepage
-    # Guard against rows with empty image values; template accesses ad.image.url.
-    ads = (
-        CarouselAd.objects.filter(is_active=True)
-        .exclude(image="")
-        .exclude(image__isnull=True)
-    )
-
-    return render(request, "index.html", {
-        "allProds": allProds,
-        "query": query,
-        "ads": ads,
-    })
+        return render(request, "index.html", {
+            "allProds": allProds,
+            "query": query,
+            "ads": ads,
+        })
+    except Exception:
+        print(f"Homepage render error:\n{traceback.format_exc()}")
+        try:
+            return render(request, "index.html", {"allProds": [], "query": query, "ads": []})
+        except Exception:
+            return HttpResponse("Natural Nikhaar is live. Homepage is recovering.", status=200)
 
 
 def contact(request):
