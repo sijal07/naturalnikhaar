@@ -9,10 +9,14 @@ services:
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
-        value: "*"
+        value: "naturalnikhaar-web.onrender.com"
       - key: DJANGO_SERVE_MEDIA
-        value: "False"
+        value: "True"
       - key: DJANGO_SECRET_KEY
         generateValue: true
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
       - key: WEB_CONCURRENCY
         value: "2"
