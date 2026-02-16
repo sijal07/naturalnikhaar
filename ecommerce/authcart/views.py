@@ -58,7 +58,7 @@ def signup(request):
 
 def handlelogin(request):
     if request.method == "POST":
-        username = request.POST.get("email")       # email field
+        username = request.POST.get("email")       # accepts username or email
         userpassword = request.POST.get("password")
 
         if not username or not userpassword:
@@ -66,6 +66,11 @@ def handlelogin(request):
             return redirect("/auth/login/")
 
         myuser = authenticate(request, username=username, password=userpassword)
+        if myuser is None and "@" in username:
+            # Fallback: allow login with email even when username is different.
+            user_obj = User.objects.filter(email__iexact=username).first()
+            if user_obj:
+                myuser = authenticate(request, username=user_obj.username, password=userpassword)
 
         if myuser is not None:
             if myuser.is_active:

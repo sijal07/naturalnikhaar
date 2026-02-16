@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
-    startCommand: python manage.py migrate --noinput && gunicorn ecommerce.wsgi:application --log-file=-
+    startCommand: python manage.py migrate --noinput && python manage.py ensure_admin && gunicorn ecommerce.wsgi:application --log-file=-
     envVars:
       - key: DJANGO_DEBUG
         value: "False"
@@ -17,6 +17,12 @@ services:
       - key: RAZORPAY_KEY_ID
         sync: false
       - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
         sync: false
       - key: WEB_CONCURRENCY
         value: "2"
