@@ -1,6 +1,105 @@
 {% extends 'base.html' %}
 {% block title %}About Us{% endblock title %}
-{% block body %}
-<h1>About Us</h1>
 
+{% block content %}
+<div class="container py-4">
+  <h1 class="simple-page-title">About Natural Nikhaar</h1>
+  <p class="simple-page-subtitle mb-0">Privacy policy, shipping, returns, and terms.</p>
+</div>
+{% endblock content %}
+
+{% block body %}
+<section class="simple-about pb-5">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-12">
+        <div class="simple-card">
+          <h3>1. Privacy Policy</h3>
+          <ul>
+            <li>We collect only name, email, phone number, and address for orders and support.</li>
+            <li>We never share, sell, or misuse your personal information.</li>
+            <li>Your data is used only for communication and delivery.</li>
+            <li>Using this site means you agree to these practices.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="simple-card">
+          <h3>2. Shipping Policy</h3>
+          <ul>
+            <li>We ship across India in 5-7 business days after purchase.</li>
+            <li>Delivery usually takes 5-9 working days based on location.</li>
+            <li>Tracking details are shared after dispatch.</li>
+            <li>Courier, weather, or holiday delays may affect delivery time.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="simple-card">
+          <h3>3. Return & Refund Policy</h3>
+          <ul>
+            <li>No returns for opened or used handmade products.</li>
+            <li>Returns are accepted for damaged, broken, or wrong products only.</li>
+            <li>Share an unboxing video within 24 hours on <strong>8975937796</strong>.</li>
+            <li>Refunds are processed after team verification.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="simple-card">
+          <h3>4. Terms & Conditions</h3>
+          <ul>
+            <li>Products are for external use only.</li>
+            <li>Do a patch test before use.</li>
+            <li>Results vary by skin type, hair type, and lifestyle.</li>
+            <li>Using this website means you accept all terms and policies.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .simple-about {
+    background: var(--primary-bg);
+  }
+
+  .simple-page-title {
+    color: var(--secondary-bg);
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  .simple-page-subtitle {
+    color: var(--secondary-text);
+  }
+
+  .simple-card {
+    background: #fff;
+    border: 1px solid rgba(179, 147, 89, 0.35);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+  }
+
+  .simple-card h3 {
+    color: var(--secondary-bg);
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .simple-card ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .simple-card li {
+    color: var(--primary-text);
+    margin-bottom: 0.35rem;
+    line-height: 1.45;
+  }
+</style>
 {% endblock body %}

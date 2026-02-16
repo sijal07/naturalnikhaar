@@ -5,8 +5,9 @@ from django.conf import settings
 from django.views.static import serve
 import os
 
-# Default to serving media only in DEBUG mode unless explicitly enabled.
-default_serve_media = "True" if settings.DEBUG else "False"
+# Serve media by default so uploaded product/ad images always work on local/simple deployments.
+# Set DJANGO_SERVE_MEDIA=False when a fronting server/CDN serves media instead.
+default_serve_media = "True"
 serve_media = os.getenv("DJANGO_SERVE_MEDIA", default_serve_media).strip().lower() in ("1", "true", "yes", "on")
 
 urlpatterns = [

@@ -1,173 +1,368 @@
 {% extends 'base.html' %}
-{% block title %}
-Check Out
-{% endblock title %} 
+{% block title %}Check Out{% endblock title %} 
 {% block content %}
+<div id="boss" class="container py-4">
+  <h1 class="fw-bold display-6 text-center text-md-start nikhaar-title">
+    <span class="d-block fs-5 welcome-text">Welcome to</span>
+    <span style="color: #224a0a !important;">NATURAL NIKHAAR</span>
+  </h1>
+  <h3 class="fs-6 fs-md-5 text-center text-md-start clinic-text" style="color: #191102 !important;">
+    Skin and Hair clinic
+  </h3>
+  <form
+    class="col-12 col-lg-8 mb-3 mb-lg-0 px-0 premium-search-form"
+    role="search"
+    method="get"
+    action="/"
+  >
+    <div class="input-group premium-search-group">
+      <input
+        type="search"
+        class="form-control premium-search-input"
+        placeholder="Search products..."
+        aria-label="Search"
+        name="query"
+        value="{{ request.GET.query|default:'' }}"
+      >
+      <button class="btn premium-search-btn" type="submit">
+        <i class="fa fa-search"></i> Search
+      </button>
+    </div>
+  </form>
+</div>
+<style>
+  .premium-search-form {
+    animation: searchReveal 0.65s ease-out both;
+  }
 
-<h1>Welcome to Dhamaka Sale</h1>
+  .premium-search-group {
+    position: relative !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(179, 147, 89, 0.35) !important;
+    box-shadow:
+      0 12px 30px rgba(45, 71, 57, 0.14),
+      0 3px 0 rgba(255, 255, 255, 0.4) inset !important;
+    background: linear-gradient(130deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.62)) !important;
+    backdrop-filter: blur(8px) !important;
+    transition: box-shadow 0.35s ease, transform 0.35s ease !important;
+  }
 
+  .premium-search-group::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -120% !important;
+    width: 80% !important;
+    height: 100% !important;
+    background: linear-gradient(
+      100deg,
+      transparent,
+      rgba(255, 255, 255, 0.45),
+      transparent
+    ) !important;
+    animation: searchShine 4.2s ease-in-out infinite !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+  }
+
+  .premium-search-form:focus-within .premium-search-group {
+    transform: translateY(-1px) !important;
+    box-shadow:
+      0 16px 36px rgba(45, 71, 57, 0.2),
+      0 0 0 2px rgba(179, 147, 89, 0.28),
+      0 2px 0 rgba(255, 255, 255, 0.5) inset !important;
+  }
+
+  .premium-search-input {
+    border: none !important;
+    background: transparent !important;
+    color: var(--primary-text) !important;
+    font-weight: 500 !important;
+    font-size: 0.98rem !important;
+    padding: 0.95rem 1.1rem !important;
+    z-index: 2 !important;
+  }
+
+  .premium-search-input::placeholder {
+    color: rgba(74, 93, 78, 0.85) !important;
+  }
+
+  .premium-search-input:focus {
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  .premium-search-btn {
+    position: relative !important;
+    border: none !important;
+    background: var(--cart-gradient) !important;
+    color: #2a2119 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.4px !important;
+    padding: 0.375rem 0.75rem !important;
+    transition: all 0.32s ease !important;
+    min-width: auto !important;
+    overflow: hidden !important;
+    z-index: 2 !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.45),
+      0 6px 18px rgba(179, 147, 89, 0.35) !important;
+  }
+
+  .premium-search-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -125% !important;
+    width: 90% !important;
+    height: 100% !important;
+    background: linear-gradient(
+      100deg,
+      transparent,
+      rgba(255, 255, 255, 0.55),
+      transparent
+    ) !important;
+    transition: left 0.6s ease !important;
+  }
+
+  .premium-search-btn i {
+    margin-right: 6px !important;
+    transition: transform 0.3s ease !important;
+  }
+
+  .premium-search-btn:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+    filter: brightness(1.05) !important;
+    box-shadow:
+      0 12px 24px rgba(179, 147, 89, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+    color: #1d1812 !important;
+  }
+
+  .premium-search-btn:hover::before {
+    left: 120% !important;
+  }
+
+  .premium-search-btn:hover i {
+    transform: rotate(-12deg) scale(1.08) !important;
+  }
+
+  .premium-search-btn:active {
+    transform: translateY(0) scale(0.99) !important;
+  }
+
+  @keyframes searchShine {
+    0%,
+    70%,
+    100% {
+      left: -120%;
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    40% {
+      left: 120%;
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes searchReveal {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 991px) {
+    #boss form .input-group {
+      flex-direction: column !important;
+      gap: 10px !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      overflow: visible !important;
+    }
+
+    #boss form input[type="search"] {
+      border-radius: 12px !important;
+      margin-bottom: 0 !important;
+      width: 100% !important;
+      border: 1px solid rgba(179, 147, 89, 0.35) !important;
+      background: rgba(255, 255, 255, 0.75) !important;
+      box-shadow: 0 8px 24px rgba(45, 71, 57, 0.12) !important;
+    }
+
+    #boss form button[type="submit"] {
+      border-radius: 12px !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      padding-top: 0.375rem !important;
+      padding-bottom: 0.375rem !important;
+    }
+  }
+</style>
 {% endblock content %} 
+
 {% block body %} 
 {% load static %}
-
-<!-- ======= Portfolio Section ======= -->
-<section id="portfolio" class="portfolio">
+<section id="checkout-section" class="portfolio">
   <div class="container">
     {% for message in messages %}
-
-    <div
-      class="alert alert-{{message.tags}} alert-dismissible fade show"
-      role="alert"
-    >
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
       <strong>{{message}}</strong>
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
 
     <div class="section-title">
       <h2>Welcome to Shop</h2>
-      <h3>Checkout Page </h3>
+      <h3>Checkout Page</h3>
     </div>
 
-       
-       
-       <div class="container">
-           <div class="col my-4">
-               <h2>Step 1 - My Awesome Cart Express Checkout - Review Your Cart Items</h2>
-               <div class="my-4">
-                   <ul class="list-group" id="items">
+    <div class="container">
+      <div class="col my-4">
+        <h2>Step 1 - Review Your Cart Items</h2>
+        <div class="my-4">
+          <ul class="list-group" id="items"></ul>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mt-3">
+              <li class="breadcrumb-item active" aria-current="page">
+                Your Cart Total Is <b>Rs. <span id="totalprice">0</span></b>
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
 
-                    
-                   </ul>
-       
-                   <nav aria-label="breadcrumb">
-         <ol class="breadcrumb mt-3">
-           <li class="breadcrumb-item active" aria-current="page">Your Cart Total Is <b>Rs. <span id="totalprice"></span> <span id="amount"></span></b>. Enter your details below & place your order. Thanks for using Shopping Cart</li>
-           <li</li>
-         </ol>
-       </nav>
-       
-       
-       
-                   
-               </div>
-           </div>
-           <div class="col my-4">
-               <h2>Step 2 - Enter Address & Other Details:</h2>
-               <form method="post" action="/checkout/">{% csrf_token %}
-                   <input type="hidden" name="itemsJson" id="itemsJson">
-                
-                   <input type="hidden" id="amt" name="amt">
-                   <div class="form-row">
-                       <div class="form-group col-md-6">
-                           <label for="inputname">Name</label>
-                           <input type="text" class="form-control mt-3" id="name" name="name" placeholder="Name" required>
-                       </div>
-                       <div class="form-group col-md-6">
-                           <label for="inputEmail4">Email</label>
-                           <input type="email" class="form-control mt-3" id="email" name="email" placeholder="Email" value="{{user.email}}" required>
-                       </div>
-                    
-                   </div>
-                    <div class="form-row">
-                   <div class="form-group col-md-6">
-                       <label for="inputAddress">Address</label>
-                       <input type="text" class="form-control mt-3" id="address1" name="address1" placeholder="1234 Main St" required>
-                   </div>
-                   <div class="form-group col-md-6">
-                       <label for="inputAddress">Address line 2</label>
-                       <input type="text" class="form-control mt-3" id="address2" name="address2" placeholder="1234 Main St" required>
-                   </div>
-                   </div>
-       
-                 
-                 
-                   <div class="form-row">
-                       <div class="form-group col-md-6">
-                           <label for="inputCity">City</label>
-                           <input type="text" class="form-control mt-3" id="city" name="city" required>
-                       </div>
-                       <div class="form-group col-md-6">
-                           <label for="inputState">State</label>
-                           <input type="text" class="form-control mt-3" id="state" name="state"  placeholder="Enter State" required>
-                       </div>
-                       </div>
-                     
-                    <div class="form-row">
-                    <div class="form-group col-md-6">
-                           <label for="inputZip">Pin Code</label>
-                           <input type="number" class="form-control mt-3" id="zip_code" name="zip_code" required>
-                       </div>
-                   <div class="form-group col-md-6">
-                       <label for="inputZip">Phone Number</label>
-                       <input type="number" class="form-control mt-3" id="phone" name="phone" required>
-                   </div>
-                   <br>
-               
-                   
-                   <button id="btn" type="submit" class="btn btn-success btn-sm btn-block col-md-4">Place Order</button>
-               </form>
-           </div>
-       </div>
-   
- <script src="https://code.jquery.com/jquery-3.3.1.js"
- integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
- crossorigin="anonymous"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+      <div class="col my-4">
+        <h2>Step 2 - Enter Address & Other Details:</h2>
+        <form method="post" action="/checkout/">
+          {% csrf_token %}
+          <input type="hidden" name="itemsJson" id="itemsJson">
+          <input type="hidden" id="amt" name="amt" value="0">
+          
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="name">Name</label>
+              <input type="text" class="form-control mt-3" id="name" name="name" placeholder="Full Name" required>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="email">Email</label>
+              <input type="email" class="form-control mt-3" id="email" name="email" value="{{user.email|default:''}}" required>
+            </div>
+          </div>
 
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="address1">Address Line 1</label>
+              <input type="text" class="form-control mt-3" id="address1" name="address1" placeholder="House No, Street" required>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="address2">Address Line 2</label>
+              <input type="text" class="form-control mt-3" id="address2" name="address2" placeholder="Landmark, Area">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="city">City</label>
+              <input type="text" class="form-control mt-3" id="city" name="city" required>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="state">State</label>
+              <input type="text" class="form-control mt-3" id="state" name="state" placeholder="Maharashtra" required>
+            </div>
+            <div class="form-group col-md-2">
+              <label for="zip_code">Pin Code</label>
+              <input type="number" class="form-control mt-3" id="zip_code" name="zip_code" required>
+            </div>
+            <div class="form-group col-md-2">
+              <label for="phone">Phone</label>
+              <input type="tel" class="form-control mt-3" id="phone" name="phone" placeholder="10-digit" required>
+            </div>
+          </div>
+
+          <div class="alert alert-info mt-4">
+            <h5><i class="fa fa-credit-card"></i> Secure Payment with Razorpay</h5>
+            <p>Supports Cards, UPI, Netbanking, Wallets</p>
+            <strong>Total: Rs. <span id="display-amt">0</span></strong>
+          </div>
+
+          <button id="btn" type="submit" class="btn btn-success btn-lg btn-block col-md-4 mb-3" disabled>
+            <i class="fa fa-lock"></i> PAY NOW ₹0 (Secure)
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
 
 <script>
-if (localStorage.getItem('cart') == null) {
-   var cart = {};
-} else {
-   cart = JSON.parse(localStorage.getItem('cart'));
+let totalPrice = 0;
+let cart = {};
+
+try {
+    const cartData = localStorage.getItem('cart');
+    if (!cartData || cartData === 'null') {
+        throw new Error('No cart data');
+    }
+    cart = JSON.parse(cartData);
+    
+    if ($.isEmptyObject(cart)) {
+        $('#items').html('<div class="alert alert-warning">Your cart is empty. <a href="/" class="alert-link">Continue Shopping</a></div>');
+        $('#btn').html('<i class="fa fa-ban"></i> Add Items First').prop('disabled', true);
+    } else {
+        for (let item in cart) {
+            let name = cart[item][1].replace(/\\n|[\n\r]/g, '').trim();
+            let qty = parseInt(cart[item][0]) || 0;
+            let priceStr = cart[item][2].replace(/[₹₹, ]/g, '');
+            let itemPrice = parseFloat(priceStr) || 0;
+            
+            if (qty > 0 && itemPrice > 0) {
+                let subtotal = qty * itemPrice;
+                totalPrice += subtotal;
+                
+                $('#items').append(`
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>${name}</strong><br>
+                            <small>Qty: ${qty} × ₹${itemPrice.toLocaleString('en-IN')}</small>
+                        </div>
+                        <span class="badge badge-success fs-6">₹${subtotal.toLocaleString('en-IN')}</span>
+                    </li>
+                `);
+            }
+        }
+        
+        if (totalPrice > 0) {
+            $('#btn').prop('disabled', false).html(`<i class="fa fa-lock"></i> PAY NOW ₹${totalPrice.toLocaleString('en-IN')} (Secure)`);
+        }
+    }
+} catch (e) {
+    console.error('Cart error:', e);
+    $('#items').html('<div class="alert alert-danger">Cart error. <a href="/" class="alert-link">Clear & Shop</a></div>');
+    localStorage.clear();
 }
-console.log(cart);
 
-var sum = 0;
-var totalPrice = 0;
-if ($.isEmptyObject(cart)) {
-   //if object is empty
-   mystr = `<p>Your cart is empty, please add some items to your cart before checking out!</p>`
-   $('#items').append(mystr);
-} else {
-   for (item in cart) {
-       let name = cart[item][1];
-       let qty = cart[item][0];
-       let itemPrice = cart[item][2];
-       sum = sum + qty;
-       totalPrice = totalPrice + qty* itemPrice;
-       
-       mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                   ${name}
-                   <div><b> Price : ${itemPrice}</b></div>
-                   <span class="badge badge-primary badge-pill">${qty}</span>
-               </li>`
-       $('#items').append(mystr);
-   }
-   document.getElementById('totalprice').innerHTML=totalPrice
-
-}
-document.getElementById('totalprice').innerHTML = totalPrice;
-
+document.getElementById('totalprice').textContent = totalPrice.toLocaleString('en-IN');
+document.getElementById('display-amt').textContent = totalPrice.toLocaleString('en-IN');
+document.getElementById('amt').value = totalPrice || 0;
 $('#itemsJson').val(JSON.stringify(cart));
 
-
-
 {% if thank %}
-alert('Thanks for ordering with us. Your order is is {{id}}. Use it to track your order using our order tracker');
+alert('Thanks for ordering! Order ID: {{id}}');
 localStorage.clear();
-document.location = "/";
+window.location = "/";
 {% endif %}
-
-var test = `${totalPrice}`;
-document.getElementById("amt").value = test;
 </script>
-
 {% endblock body %}
