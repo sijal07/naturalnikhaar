@@ -54,12 +54,18 @@ def index(request):
             "query": query,
             "ads": ads,
         })
-    except Exception:
-        print(f"Homepage render error:\n{traceback.format_exc()}")
+    except Exception as primary_exc:
+        print(f"Homepage render error:\n{traceback.format_exc()}", flush=True)
         try:
             return render(request, "index.html", {"allProds": [], "query": query, "ads": []})
-        except Exception:
-            return HttpResponse("Natural Nikhaar is live. Homepage is recovering.", status=200)
+        except Exception as fallback_exc:
+            return HttpResponse(
+                "Natural Nikhaar is live. Homepage is recovering.\n"
+                f"Primary error: {type(primary_exc).__name__}: {primary_exc}\n"
+                f"Fallback error: {type(fallback_exc).__name__}: {fallback_exc}",
+                status=200,
+                content_type="text/plain; charset=utf-8",
+            )
 
 
 def contact(request):
