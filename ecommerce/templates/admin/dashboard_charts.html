@@ -1,0 +1,181 @@
+<div class="admin-dashboard-wrap">
+  <div class="dashboard-kpis">
+    <div class="kpi-card">
+      <p class="kpi-label">Total Orders</p>
+      <p class="kpi-value">{{ total_orders|default:0 }}</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Total Revenue</p>
+      <p class="kpi-value">Rs {{ total_revenue|default:0 }}</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Products</p>
+      <p class="kpi-value">{{ total_products|default:0 }}</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Contacts</p>
+      <p class="kpi-value">{{ total_contacts|default:0 }}</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Active Ads</p>
+      <p class="kpi-value">{{ active_ads|default:0 }}</p>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <section class="chart-card chart-card-wide">
+      <h3>Total Orders by Date</h3>
+      <canvas id="orderTrendChart" height="120"></canvas>
+    </section>
+
+    <section class="chart-card">
+      <h3>Payment Status Mix</h3>
+      <canvas id="paymentChart" height="180"></canvas>
+    </section>
+
+    <section class="chart-card">
+      <h3>Top Order States</h3>
+      <canvas id="stateChart" height="180"></canvas>
+    </section>
+
+    <section class="chart-card chart-card-wide">
+      <h3>Product Category Share</h3>
+      <canvas id="categoryChart" height="120"></canvas>
+    </section>
+
+    <section class="chart-card chart-card-wide">
+      <h3>Contact Email Domain Distribution</h3>
+      <canvas id="contactDomainChart" height="120"></canvas>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  (function () {
+    const brandGold = "#b39359";
+    const brandGreen = "#2d4739";
+    const warmText = "#5c4033";
+
+    const paymentLabels = JSON.parse('{{ payment_labels_json|default:"[]"|escapejs }}');
+    const paymentValues = JSON.parse('{{ payment_values_json|default:"[]"|escapejs }}');
+    const stateLabels = JSON.parse('{{ state_labels_json|default:"[]"|escapejs }}');
+    const stateValues = JSON.parse('{{ state_values_json|default:"[]"|escapejs }}');
+    const categoryLabels = JSON.parse('{{ category_labels_json|default:"[]"|escapejs }}');
+    const categoryValues = JSON.parse('{{ category_values_json|default:"[]"|escapejs }}');
+    const orderSeriesLabels = JSON.parse('{{ order_series_labels_json|default:"[]"|escapejs }}');
+    const orderSeriesValues = JSON.parse('{{ order_series_values_json|default:"[]"|escapejs }}');
+    const contactDomainLabels = JSON.parse('{{ contact_domain_labels_json|default:"[]"|escapejs }}');
+    const contactDomainValues = JSON.parse('{{ contact_domain_values_json|default:"[]"|escapejs }}');
+
+    const defaults = {
+      plugins: {
+        legend: {
+          labels: {
+            color: warmText,
+            font: { weight: 600 }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: warmText },
+          grid: { color: "rgba(74, 93, 78, 0.12)" }
+        },
+        y: {
+          ticks: { color: warmText },
+          grid: { color: "rgba(74, 93, 78, 0.12)" }
+        }
+      }
+    };
+
+    if (orderSeriesLabels.length) {
+      new Chart(document.getElementById("orderTrendChart"), {
+        type: "line",
+        data: {
+          labels: orderSeriesLabels,
+          datasets: [{
+            label: "Total Orders",
+            data: orderSeriesValues,
+            borderColor: brandGold,
+            backgroundColor: "rgba(179, 147, 89, 0.25)",
+            tension: 0.35,
+            fill: true,
+            pointRadius: 4,
+            pointBackgroundColor: brandGreen
+          }]
+        },
+        options: defaults
+      });
+    }
+
+    if (paymentLabels.length) {
+      new Chart(document.getElementById("paymentChart"), {
+        type: "doughnut",
+        data: {
+          labels: paymentLabels,
+          datasets: [{
+            data: paymentValues,
+            backgroundColor: ["#b39359", "#2d4739", "#e8c792", "#4a5d4e", "#7a5a48", "#c8ae7d"]
+          }]
+        },
+        options: {
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { color: warmText, font: { weight: 600 } }
+            }
+          }
+        }
+      });
+    }
+
+    if (stateLabels.length) {
+      new Chart(document.getElementById("stateChart"), {
+        type: "bar",
+        data: {
+          labels: stateLabels,
+          datasets: [{
+            label: "Orders",
+            data: stateValues,
+            backgroundColor: "rgba(45, 71, 57, 0.82)",
+            borderRadius: 10
+          }]
+        },
+        options: defaults
+      });
+    }
+
+    if (categoryLabels.length) {
+      new Chart(document.getElementById("categoryChart"), {
+        type: "bar",
+        data: {
+          labels: categoryLabels,
+          datasets: [{
+            label: "Products",
+            data: categoryValues,
+            backgroundColor: "rgba(179, 147, 89, 0.86)",
+            borderRadius: 10
+          }]
+        },
+        options: defaults
+      });
+    }
+
+    if (contactDomainLabels.length) {
+      new Chart(document.getElementById("contactDomainChart"), {
+        type: "bar",
+        data: {
+          labels: contactDomainLabels,
+          datasets: [{
+            label: "Contacts",
+            data: contactDomainValues,
+            backgroundColor: "rgba(122, 90, 72, 0.86)",
+            borderRadius: 10
+          }]
+        },
+        options: defaults
+      });
+    }
+  })();
+</script>

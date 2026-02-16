@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div id="content-main">
+  <div class="module aligned">
+    <h2>{{ title }}</h2>
+    <form method="post" enctype="multipart/form-data" style="padding: 16px;">
+      {% csrf_token %}
+      <p style="margin: 0 0 10px;">
+        <strong>Expected headers:</strong> {{ expected_headers }}
+      </p>
+      <p style="margin: 0 0 14px;">
+        <input type="file" name="csv_file" accept=".csv,text/csv" required>
+      </p>
+      <div class="submit-row">
+        <input type="submit" class="default" value="Import CSV">
+        <a href="{{ back_url }}" class="button">Back</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
