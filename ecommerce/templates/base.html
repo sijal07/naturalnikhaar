@@ -971,11 +971,12 @@
 
 
             <a
-              href="https://www.instagram.com/naturalnikhaar?igsh=MWdweDk3N3Z3NDh6OQ=="
+              href="https://www.instagram.com/naturalnikhaar/"
               class="social-btn instagram"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Natural Nikhaar Instagram"
+              onclick="openInstagramProfile(event, 'naturalnikhaar', 'https://www.instagram.com/naturalnikhaar/');"
             >
               <i class="bx bxl-instagram"></i>
               <span class="sr">Natural Nikhaar</span>
@@ -985,11 +986,12 @@
 
 
             <a
-              href="https://www.instagram.com/womenhealth.by.drnikhat?igsh=Ymdwd3M3MTg1MXE1"
+              href="https://www.instagram.com/womenhealth.by.drnikhat/"
               class="social-btn instagram-alt"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WomenHealth Instagram"
+              onclick="openInstagramProfile(event, 'womenhealth.by.drnikhat', 'https://www.instagram.com/womenhealth.by.drnikhat/');"
             >
               <i class="bx bxl-instagram"></i>
               <span class="sr">WomenHealth</span>
@@ -1109,6 +1111,20 @@
           behavior: 'smooth'
         });
       });
+
+      function openInstagramProfile(event, username, webUrl) {
+        if (!event || !username || !webUrl) return;
+        event.preventDefault();
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = "instagram://user?username=" + encodeURIComponent(username);
+          setTimeout(function () {
+            window.open(webUrl, "_blank", "noopener,noreferrer");
+          }, 800);
+          return;
+        }
+        window.open(webUrl, "_blank", "noopener,noreferrer");
+      }
     </script>
   </body>
 </html>
