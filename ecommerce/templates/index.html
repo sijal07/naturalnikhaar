@@ -700,18 +700,6 @@ Home
     margin-bottom: 2rem;
   }
 
-  /* Desktop: increase visual breathing space and keep carousel image fully filled */
-  @media (min-width: 1025px) {
-    .premium-carousel-wrapper {
-      padding: 1rem 0 1.5rem !important;
-    }
-
-    .premium-carousel-inner {
-      aspect-ratio: 16/6 !important;
-      min-height: 420px;
-    }
-  }
-
   .premium-carousel {
     position: relative;
   }
@@ -724,18 +712,12 @@ Home
       0 10px 40px rgba(179, 147, 89, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.4);
     aspect-ratio: 16/6;
-    background: #0f1b14;
+    object-fit: cover;
     border: 1px solid rgba(255, 215, 0, 0.1);
   }
 
-  .premium-carousel .carousel-item,
-  .premium-carousel .premium-ad-link {
-    height: 100% !important;
-    display: block !important;
-  }
-
   .premium-carousel-img {
-    object-fit: contain !important;
+    object-fit: cover !important;
     transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
                 filter 0.8s ease !important;
     width: 100% !important;
@@ -743,7 +725,7 @@ Home
   }
 
   .carousel-item.active .premium-carousel-img {
-    transform: scale(1);
+    transform: scale(1.05);
     filter: brightness(1) !important;
   }
 
@@ -911,7 +893,7 @@ Home
     }
 
     .premium-carousel-img {
-      height: 100% !important;
+      height: auto !important;
     }
 
     .caption-title {

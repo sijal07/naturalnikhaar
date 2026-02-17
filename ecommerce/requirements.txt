@@ -9,3 +9,12 @@ six>=1.16,<2.0
 dj-database-url>=2.2,<3.0
 psycopg2-binary>=2.9,<3.0
 mysqlclient>=2.2,<3.0; platform_system=="Windows"
+psycopg2-binary>=2.9.9
+dj-database-url>=2.1.0
+gunicorn>=21.2.0
+whitenoise>=6.6.0
+Pillow>=10.0.0
+razorpay>=1.4.0
+setuptools>=80.0.0,<81.0.0
+pycryptodome>=3.20.0,<4.0.0
+six>=1.16.0,<2.0.0      
