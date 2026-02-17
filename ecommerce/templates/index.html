@@ -633,6 +633,20 @@ Home
   .modal-smaller .modal-footer {
     padding: 0.75rem !important;
   }
+
+  /* Keep long descriptions and long words inside modal bounds */
+  .modal-smaller .modal-footer [class*="col-"] {
+    min-width: 0 !important;
+  }
+
+  .modal-smaller .modal-desc {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    line-height: 1.45 !important;
+    max-height: 4.2em;
+    overflow: auto;
+  }
   
   .modal-smaller .modal-title {
     font-size: 1.25rem !important;
@@ -642,6 +656,10 @@ Home
   @media (max-width: 991px) {
     .modal-smaller .modal-footer .row {
       margin: 0 !important;
+    }
+
+    .modal-smaller .modal-footer .row {
+      align-items: stretch !important;
     }
     
     .modal-smaller .modal-footer .col-7,
@@ -657,6 +675,12 @@ Home
     
     .modal-smaller .premium-new-price {
       font-size: 1.3rem !important;
+    }
+
+    .modal-smaller .modal-footer .col-7,
+    .modal-smaller .modal-footer .col-5 {
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
     }
   }
 
@@ -1103,7 +1127,7 @@ Home
                               {% endif %}
                             </div>
                           </h6>
-                          <p class="mb-0 small" style="color: #555; line-height: 1.4;">{{ i.desc|truncatewords:"20" }}</p>
+                          <p class="mb-0 small modal-desc" style="color: #555;">{{ i.desc|truncatewords:"20" }}</p>
                         </div>
                         <div class="col-5 text-end">
                           <span id="divpr{{ i.id }}" class="divpr mb-1">
