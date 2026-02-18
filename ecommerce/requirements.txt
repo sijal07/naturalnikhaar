@@ -18,3 +18,7 @@ razorpay>=1.4.0
 setuptools>=80.0.0,<81.0.0
 pycryptodome>=3.20.0,<4.0.0
 six>=1.16.0,<2.0.0      
+pip install whitenoise
+# Add to requirements.txt
+pip install whitenoise
+# Add to requirements.txt

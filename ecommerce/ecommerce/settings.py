@@ -1,6 +1,7 @@
 """
 Django settings for ecommerce project - POSTGRESQL + RAZORPAY READY
-COMPLETE PRODUCTION CONFIGURATION FOR RENDER
+COMPLETE PRODUCTION CONFIGURATION FOR RENDER + STATIC/IMAGES FIX
+IMAGES/CAROUSEL LOADING AFTER WAKE-UP ✅
 """
 
 import os
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ FIXED: Always first for static
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -74,11 +76,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-# WhiteNoise for static files on Render
-WHITENOISE_INSTALLED = find_spec("whitenoise") is not None
-if WHITENOISE_INSTALLED:
-    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
 ROOT_URLCONF = 'ecommerce.urls'
 
@@ -161,18 +158,15 @@ EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").strip().lower() in ("1", "true", "yes", "on")
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# Static files (CSS, JavaScript, Images) - Render WhiteNoise
+# 🔥 STATIC FILES - FIXED FOR RENDER (Images/Carousel/CSS/JS)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-if WHITENOISE_INSTALLED:
-    STATICFILES_STORAGE = os.getenv(
-        "DJANGO_STATICFILES_STORAGE",
-        "whitenoise.storage.CompressedStaticFilesStorage",
-    )
+# ✅ WhiteNoise Storage (Compress + Cache)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files (Product images)
+# 🔥 MEDIA FILES - PRODUCT IMAGES/CAROUSEL (User uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -192,3 +186,9 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True if not DEBUG else False
 SECURE_HSTS_PRELOAD = True if not DEBUG else False
 SESSION_COOKIE_SECURE = True if not DEBUG else False
 CSRF_COOKIE_SECURE = True if not DEBUG else False
+
+# Login/Logout URLs
+LOGIN_URL = '/login/'
+LOGOUT_URL = '/logout/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
