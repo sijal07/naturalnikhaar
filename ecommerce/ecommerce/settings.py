@@ -6,6 +6,7 @@ STATIC ✓ | MEDIA ✓ | RAZORPAY ✓ | POSTGRESQL ✓
 import os
 from pathlib import Path
 from urllib.parse import urlparse
+from django.contrib import messages  # ← ADD THIS LINE!
 
 try:
     import dj_database_url
@@ -119,5 +120,6 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # DEFAULT
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-MESSAGE_TAGS = {messages.ERROR: 'danger'}
+MESSAGE_TAGS = {messages.ERROR: 'danger'}  # FIXED - NO COMMA!
