@@ -1,37 +1,28 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.db.models import Q
-from ecommerceapp.models import Contact, Product, OrderUpdate, Orders, CarouselAd
 from django.contrib import messages
-from math import ceil
-from ecommerceapp import keys
 from django.views.decorators.csrf import csrf_exempt
-import razorpay
-from decimal import Decimal
-import traceback
-from datetime import timedelta
 from django.utils import timezone
-import razorpay
 from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render, redirect
-from .models import Orders
-import json 
+
+from ecommerceapp.models import Contact, Product, OrderUpdate, Orders, CarouselAd
+
+import razorpay
+import traceback
+import json
+from datetime import timedelta
 
 
-# Test Razorpay connection first
-try:
-    client = razorpay.Client(auth=(keys.KEY_ID, keys.KEY_SECRET))
-    print(f"Razorpay client initialized with KEY_ID: {keys.KEY_ID[:10]}...")
-except Exception as e:
-    print(f"Razorpay init failed: {e}")
-    client = None
-
-
+# ==============================
+# Homepage
+# ==============================
 def index(request):
     query = request.GET.get("query", "").strip()
+
     try:
         products_qs = Product.objects.all()
+
         if query:
             products_qs = products_qs.filter(
                 Q(product_name__icontains=query) |
@@ -39,16 +30,17 @@ def index(request):
                 Q(subcategory__icontains=query) |
                 Q(desc__icontains=query)
             )
+
         allProds = []
         catprods = products_qs.values("category", "id")
         cats = {item["category"] for item in catprods}
+
         for cat in cats:
             prod = products_qs.filter(category=cat)
             n = len(prod)
             nSlides = n // 4 + (1 if n % 4 != 0 else 0)
             allProds.append([prod, range(1, nSlides + 1), nSlides])
 
-        # Guard against rows with empty image values; template accesses ad.image.url.
         ads = (
             CarouselAd.objects.filter(is_active=True)
             .exclude(image="")
@@ -60,20 +52,15 @@ def index(request):
             "query": query,
             "ads": ads,
         })
-    except Exception as primary_exc:
-        print(f"Homepage render error:\n{traceback.format_exc()}", flush=True)
-        try:
-            return render(request, "index.html", {"allProds": [], "query": query, "ads": []})
-        except Exception as fallback_exc:
-            return HttpResponse(
-                "Natural Nikhaar is live. Homepage is recovering.\n"
-                f"Primary error: {type(primary_exc).__name__}: {primary_exc}\n"
-                f"Fallback error: {type(fallback_exc).__name__}: {fallback_exc}",
-                status=200,
-                content_type="text/plain; charset=utf-8",
-            )
+
+    except Exception as e:
+        print("Homepage error:", traceback.format_exc())
+        return HttpResponse("Site is live. Homepage recovering.")
 
 
+# ==============================
+# Contact
+# ==============================
 def contact(request):
     if request.method == "POST":
         Contact.objects.create(
@@ -82,20 +69,28 @@ def contact(request):
             desc=request.POST.get("desc"),
             phonenumber=request.POST.get("pnumber")
         )
-        messages.info(request, "We will get back to you soon..")
+        messages.info(request, "We will get back to you soon.")
+
     return render(request, "contact.html")
 
 
+# ==============================
+# About
+# ==============================
 def about(request):
     return render(request, "about.html")
 
 
+# ==============================
+# Checkout
+# ==============================
 def checkout(request):
     if not request.user.is_authenticated:
         messages.warning(request, "Login & Try Again")
         return redirect('/auth/login')
 
     if request.method == "POST":
+
         items_json = request.POST.get('itemsJson', '{}')
         name = request.POST.get('name', '')
         amount_raw = request.POST.get('amt', '0')
@@ -103,7 +98,6 @@ def checkout(request):
         address1 = request.POST.get('address1', '')
         phone = request.POST.get('phone', '')
 
-        # Fix amount parsing
         try:
             amount_rupees = float(amount_raw) if amount_raw not in ['NaN', ''] else 0
             amount_paise = max(100, int(amount_rupees * 100))
@@ -112,10 +106,10 @@ def checkout(request):
             return render(request, 'checkout.html')
 
         if amount_rupees < 1:
-            messages.error(request, "Cart is empty. Add items first!")
+            messages.error(request, "Cart is empty.")
             return render(request, 'checkout.html')
 
-        # Save order in DB
+        # Save order
         order = Orders.objects.create(
             items_json=items_json,
             name=name,
@@ -144,10 +138,11 @@ def checkout(request):
             })
 
         except Exception as e:
-            messages.error(request, f"Payment setup failed: {str(e)[:60]}")
+            print("Razorpay Error:", e)
+            messages.error(request, "Payment initialization failed.")
             return render(request, 'checkout.html')
 
-        # ✅ SAVE RAZORPAY ORDER ID
+        # Save Razorpay order id
         order.razorpay_order_id = razorpay_order['id']
         order.save()
 
@@ -165,15 +160,21 @@ def checkout(request):
     return render(request, 'checkout.html')
 
 
+# ==============================
+# Payment Success
+# ==============================
 @csrf_exempt
 def payment_success(request):
+
     if request.method == "POST":
 
         razorpay_order_id = request.POST.get('razorpay_order_id')
         razorpay_payment_id = request.POST.get('razorpay_payment_id')
         razorpay_signature = request.POST.get('razorpay_signature')
 
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        client = razorpay.Client(
+            auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+        )
 
         try:
             client.utility.verify_payment_signature({
@@ -187,17 +188,31 @@ def payment_success(request):
             order.amountpaid = order.amount
             order.save()
 
+            OrderUpdate.objects.create(
+                order_id=order.order_id,
+                update_desc="Payment successful"
+            )
+
             return redirect("profile")
 
-        except:
+        except Exception as e:
+            print("Payment verification failed:", e)
             return redirect("checkout")
 
+    return redirect("checkout")
+
+
+# ==============================
+# Profile
+# ==============================
 def profile(request):
+
     if not request.user.is_authenticated:
         messages.warning(request, "Login & Try Again")
         return redirect('/auth/login')
-    
+
     orders = Orders.objects.filter(email=request.user.email)
+
     delivered_order_ids = set(
         OrderUpdate.objects.filter(
             order_id__in=orders.values_list('order_id', flat=True),
@@ -205,13 +220,9 @@ def profile(request):
         ).values_list('order_id', flat=True)
     )
 
-    # Show delivery state from order updates; otherwise show expected date.
     for order in orders:
         order.is_delivered = order.order_id in delivered_order_ids
         base_date = order.created_at or timezone.now()
         order.expected_delivery = base_date + timedelta(days=10)
-    
-    context = {"items": orders}
-    return render(request, "profile.html", context)
 
-
+    return render(request, "profile.html", {"items": orders})
