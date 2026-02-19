@@ -25,11 +25,11 @@
                 "contact": "{{ phone }}"
             },
             "handler": function (response) {
-                // Submit payment details to your server
+                // Let server handle verification FIRST (no client redirect)
                 var form = document.createElement('form');
                 form.method = 'POST';
-                form.action = 'http://127.0.0.1:8000/handlerequest/';  // Your callback URL
-
+                form.action = '/handlerequest/';  // FIXED: Production URL (no localhost)
+                
                 var fields = [
                     ['razorpay_payment_id', response.razorpay_payment_id],
                     ['razorpay_order_id', response.razorpay_order_id],
@@ -44,13 +44,7 @@
                     form.appendChild(input);
                 });
                 document.body.appendChild(form);
-                form.submit();
-                
-                // After form submit, redirect to profile and refresh checkout
-                setTimeout(function() {
-                    window.location.href = '/profile/';  // Redirect to profile page
-                    window.location.reload(true);        // Force refresh checkout/profile
-                }, 1000);
+                form.submit();  // Server updates paymentstatus='Paid'
             },
             "theme": {
                 "color": "#3399cc"
@@ -62,7 +56,6 @@
             rzp.open();
             e.preventDefault();
         }
-        // Auto-trigger payment
         rzp.open();
     </script>
 </body>
