@@ -1,8 +1,3 @@
-"""
-NATURAL NIKAARH - RENDER PRODUCTION SETTINGS
-STATIC ✓ | MEDIA ✓ | RAZORPAY ✓ | POSTGRESQL ✓
-"""
-
 import os
 from pathlib import Path
 from urllib.parse import urlparse
@@ -12,6 +7,26 @@ try:
     import dj_database_url
 except ImportError:
     dj_database_url = None
+
+# CLOUDINARY - FREE MEDIA STORAGE (FIXES 404s)
+try:
+    from cloudinary import config
+    from cloudinary.uploader import upload
+    from cloudinary_storage.storage import VideoMediaCloudinaryStorage, ImageMediaCloudinaryStorage
+    
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+        'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+    }
+    config(cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+           api_key=CLOUDINARY_STORAGE['API_KEY'],
+           api_secret=CLOUDINARY_STORAGE['API_SECRET'])
+    
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+except ImportError:
+    # Fallback for local dev
+    pass
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -44,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',  # ADD THIS
     'ecommerceapp',
     'authcart',
 ]
@@ -101,9 +117,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# MEDIA FILES - PRODUCT/CAROUSEL IMAGES (FIXED 404s)
+# MEDIA FILES - CLOUDINARY (PERMANENT FIX)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# No local MEDIA_ROOT needed - Cloudinary handles uploads
 
 # SECURITY - PRODUCTION HTTPS
 SECURE_SSL_REDIRECT = not DEBUG
@@ -119,7 +135,13 @@ LOGOUT_URL = '/logout/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# DEFAULT
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MESSAGE_TAGS = {messages.ERROR: 'danger'}  # FIXED - NO COMMA!
+
+# CLOUDINARY
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv("CLOUDINARY_CLOUD_NAME"),
+    'API_KEY': os.getenv("CLOUDINARY_API_KEY"),
+    'API_SECRET': os.getenv("CLOUDINARY_API_SECRET"),
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'  
