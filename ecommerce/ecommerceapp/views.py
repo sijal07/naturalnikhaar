@@ -11,6 +11,12 @@ from decimal import Decimal
 import traceback
 from datetime import timedelta
 from django.utils import timezone
+import razorpay
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
+from .models import Orders
+import json 
 
 
 # Test Razorpay connection first
@@ -90,7 +96,6 @@ def checkout(request):
         return redirect('/auth/login')
 
     if request.method == "POST":
-        # Safe data extraction
         items_json = request.POST.get('itemsJson', '{}')
         name = request.POST.get('name', '')
         amount_raw = request.POST.get('amt', '0')
@@ -98,10 +103,10 @@ def checkout(request):
         address1 = request.POST.get('address1', '')
         phone = request.POST.get('phone', '')
 
-        # **CRITICAL: Fix amount parsing**
+        # Fix amount parsing
         try:
-            amount_rupees = float(amount_raw) if amount_raw != 'NaN' and amount_raw != '' else 0
-            amount_paise = max(100, int(amount_rupees * 100))  # Min ₹1
+            amount_rupees = float(amount_raw) if amount_raw not in ['NaN', ''] else 0
+            amount_paise = max(100, int(amount_rupees * 100))
         except:
             messages.error(request, "Invalid amount in cart")
             return render(request, 'checkout.html')
@@ -110,54 +115,46 @@ def checkout(request):
             messages.error(request, "Cart is empty. Add items first!")
             return render(request, 'checkout.html')
 
-        print(f"Order: Rs.{amount_rupees} | Items: {items_json[:50]}...")
-
-        # Save order
+        # Save order in DB
         order = Orders.objects.create(
             items_json=items_json,
             name=name,
             amount=int(amount_rupees),
             email=email,
             address1=address1,
-            phone=phone
+            phone=phone,
+            paymentstatus="Pending"
         )
-        
-        OrderUpdate.objects.create(order_id=order.order_id, update_desc="Order placed - Payment pending")
 
-        # **DEBUG: Test Razorpay order creation**
-        if not client:
-            messages.error(request, "Payment service unavailable. Contact support.")
-            return render(request, 'checkout.html')
+        OrderUpdate.objects.create(
+            order_id=order.order_id,
+            update_desc="Order placed - Payment pending"
+        )
 
         try:
-            print("Creating Razorpay order...")
+            client = razorpay.Client(
+                auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+            )
+
             razorpay_order = client.order.create({
                 'amount': amount_paise,
                 'currency': 'INR',
                 'receipt': f"order_{order.order_id}",
                 'payment_capture': 1,
-                'notes': {'shipping': name, 'order_id': order.order_id}
             })
-            print(f"Razorpay order created: {razorpay_order['id']}")
+
         except Exception as e:
-            error_msg = str(e)
-            print(f"Razorpay Error: {error_msg}")
-            print(f"Full traceback: {traceback.format_exc()}")
-            
-            # Common fixes in messages
-            if "INVALID_KEY" in error_msg or "KEY" in error_msg:
-                messages.error(request, "Invalid payment keys. Admin: Check keys.py")
-            elif "NETWORK" in error_msg:
-                messages.error(request, "Payment service temporarily unavailable")
-            else:
-                messages.error(request, f"Payment setup failed: {error_msg[:50]}...")
+            messages.error(request, f"Payment setup failed: {str(e)[:60]}")
             return render(request, 'checkout.html')
 
-        # Success - redirect to payment
+        # ✅ SAVE RAZORPAY ORDER ID
+        order.razorpay_order_id = razorpay_order['id']
+        order.save()
+
         return render(request, 'razorpay.html', {
             'razorpay_order_id': razorpay_order['id'],
             'razorpay_amount': amount_paise,
-            'razorpay_key': keys.KEY_ID,
+            'razorpay_key': settings.RAZORPAY_KEY_ID,
             'order_id': order.order_id,
             'name': name,
             'email': email,
@@ -169,51 +166,31 @@ def checkout(request):
 
 
 @csrf_exempt
-def handlerequest(request):
-    if request.method != "POST":
-        return render(request, 'paymentstatus.html', {'response': {'status': 'error', 'message': 'Invalid method'}})
+def payment_success(request):
+    if request.method == "POST":
 
-    try:
-        payment_id = request.POST.get('razorpay_payment_id')
-        order_id = request.POST.get('razorpay_order_id')
-        signature = request.POST.get('razorpay_signature')
+        razorpay_order_id = request.POST.get('razorpay_order_id')
+        razorpay_payment_id = request.POST.get('razorpay_payment_id')
+        razorpay_signature = request.POST.get('razorpay_signature')
 
-        print(f"Payment callback: {payment_id}, {order_id}")
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-        if not all([payment_id, order_id, signature]):
-            return render(request, 'paymentstatus.html', {'response': {'status': 'error', 'message': 'Missing payment data'}})
+        try:
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            })
 
-        # Verify signature
-        client.utility.verify_payment_signature({
-            'razorpay_order_id': order_id,
-            'razorpay_payment_id': payment_id,
-            'razorpay_signature': signature
-        })
+            order = Orders.objects.get(razorpay_order_id=razorpay_order_id)
+            order.paymentstatus = "Paid"
+            order.amountpaid = order.amount
+            order.save()
 
-        # Update order
-        rid = order_id.replace("order_", "")
-        order = Orders.objects.get(order_id=int(rid))
-        order.paymentstatus = "PAID"
-        order.oid = payment_id
-        order.amountpaid = str(float(order.amount))
-        order.save()
+            return redirect("profile")
 
-        print(f"Order {rid} PAID with {payment_id}")
-        return render(request, 'paymentstatus.html', {
-            'response': {
-                'status': 'success',
-                'message': 'Payment successful!',
-                'order_id': order.order_id,
-                'payment_id': payment_id
-            }
-        })
-
-    except Exception as e:
-        print(f"Payment verification failed: {e}")
-        return render(request, 'paymentstatus.html', {
-            'response': {'status': 'error', 'message': f'Payment failed: {str(e)[:50]}'}
-        })
-
+        except:
+            return redirect("checkout")
 
 def profile(request):
     if not request.user.is_authenticated:
@@ -236,3 +213,5 @@ def profile(request):
     
     context = {"items": orders}
     return render(request, "profile.html", context)
+
+

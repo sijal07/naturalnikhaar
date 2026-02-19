@@ -1,5 +1,5 @@
 from django.urls import path
-from ecommerceapp import views
+from . import views
 
 urlpatterns = [
     path('', views.index, name="index"),
@@ -7,6 +7,5 @@ urlpatterns = [
     path('about/', views.about, name="about"),
     path('profile/', views.profile, name="profile"),
     path('checkout/', views.checkout, name="checkout"),
-    path('checkout/', views.checkout, name="Checkout"),
-    path('handlerequest/', views.handlerequest, name="handlerequest"),
+    path("payment_success/", views.payment_success, name="payment_success"),
 ]

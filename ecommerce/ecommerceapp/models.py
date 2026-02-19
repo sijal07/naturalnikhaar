@@ -1,5 +1,4 @@
 import json
-
 from django.db import models
 
 
@@ -19,8 +18,8 @@ class Product(models.Model):
     subcategory = models.CharField(max_length=50, default="")
 
     # MRP (original price) and selling price
-    mrp = models.IntegerField(default=0)           # this will be crossed
-    selling_price = models.IntegerField(default=0)  # this will be shown as main price
+    mrp = models.IntegerField(default=0)
+    selling_price = models.IntegerField(default=0)
 
     desc = models.CharField(max_length=300)
 
@@ -33,7 +32,6 @@ class Product(models.Model):
 
     @property
     def offer_percentage(self):
-        """Calculate and return the offer percentage based on MRP and selling price"""
         if self.mrp > 0:
             discount = ((self.mrp - self.selling_price) / self.mrp) * 100
             return int(round(discount))
@@ -51,9 +49,13 @@ class Orders(models.Model):
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
     zip_code = models.CharField(max_length=100)
+
+    # Razorpay fields
+    razorpay_order_id = models.CharField(max_length=150, blank=True, null=True)
     oid = models.CharField(max_length=150, blank=True)
     amountpaid = models.CharField(max_length=500, blank=True, null=True)
     paymentstatus = models.CharField(max_length=20, blank=True)
+
     phone = models.CharField(max_length=100, default="")
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
@@ -61,10 +63,6 @@ class Orders(models.Model):
         return self.name
 
     def get_products_summary(self):
-        """
-        Return products in a readable format:
-        1x- Herbal hair growth shampoo 200ml, 4x- Neem Tulsi Soap
-        """
         if not self.items_json:
             return ""
 
@@ -100,11 +98,9 @@ class OrderUpdate(models.Model):
         return self.update_desc[0:7] + "..."
 
 
-# 🔥 NEW MODEL FOR CAROUSEL ADVERTISEMENTS 🔥
 class CarouselAd(models.Model):
     title = models.CharField(max_length=150, blank=True)
     image = models.ImageField(upload_to='carousel_ads/')
-    # Paste full product URL or any internal/external link
     link = models.URLField(max_length=500, help_text="URL of product or page")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
