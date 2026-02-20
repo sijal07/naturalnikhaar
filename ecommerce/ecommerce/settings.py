@@ -134,12 +134,14 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Email - SendGrid
+# Email - SendGrid
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY")
+EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY", "")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "Natural Nikhaar <no-reply@naturalnikhaar.com>"
 
 # RAZORPAY
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
