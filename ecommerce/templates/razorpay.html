@@ -25,11 +25,11 @@
                 "contact": "{{ phone }}"
             },
             "handler": function (response) {
-                // Let server handle verification FIRST (no client redirect)
+
                 var form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '/handlerequest/';  // FIXED: Production URL (no localhost)
-                
+                form.action = '/payment_success/';   // ✅ CORRECT URL
+
                 var fields = [
                     ['razorpay_payment_id', response.razorpay_payment_id],
                     ['razorpay_order_id', response.razorpay_order_id],
@@ -43,8 +43,9 @@
                     input.value = field[1];
                     form.appendChild(input);
                 });
+
                 document.body.appendChild(form);
-                form.submit();  // Server updates paymentstatus='Paid'
+                form.submit();
             },
             "theme": {
                 "color": "#3399cc"
@@ -52,10 +53,6 @@
         };
 
         var rzp = new Razorpay(options);
-        document.getElementById('rzp-button').onclick = function(e) {
-            rzp.open();
-            e.preventDefault();
-        }
         rzp.open();
     </script>
 </body>
