@@ -8,11 +8,11 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError
 from django.core.mail import EmailMessage
 from django.conf import settings
-from django.contrib.auth.tokens import PasswordResetTokenGenerator  # ✅ IMPORTANT
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 import os
 
 
-# ========== SIGNUP ==========
+# ================= SIGNUP =================
 def signup(request):
     if request.method == "POST":
         email = request.POST.get("email", "").strip()
@@ -53,7 +53,7 @@ def signup(request):
     return render(request, "signup.html")
 
 
-# ========== LOGIN ==========
+# ================= LOGIN =================
 def handlelogin(request):
     if request.method == "POST":
         username = request.POST.get("email", "").strip()
@@ -83,15 +83,16 @@ def handlelogin(request):
     return render(request, "login.html")
 
 
-# ========== LOGOUT ==========
+# ================= LOGOUT =================
 def handlelogout(request):
     logout(request)
     messages.info(request, "Logged out successfully")
     return redirect("/auth/login/")
 
 
-# ========== REQUEST RESET EMAIL ==========
+# ================= REQUEST RESET EMAIL =================
 class RequestResetEmailView(View):
+
     def get(self, request):
         return render(request, "request-reset-email.html")
 
@@ -104,46 +105,54 @@ class RequestResetEmailView(View):
 
         user = User.objects.filter(email__iexact=email).first()
 
-        if user:
-            try:
-                # Domain
-                domain = os.getenv("RENDER_EXTERNAL_HOSTNAME", "naturalnikhaar.com")
-                if not domain.startswith("http"):
-                    domain = f"https://{domain}"
-
-                subject = "Natural Nikhaar - Reset Your Password"
-
-                message = render_to_string(
-                    "reset-user-password.html",
-                    {
-                        "domain": domain,
-                        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                        "token": PasswordResetTokenGenerator().make_token(user),
-                    },
-                )
-
-                email_message = EmailMessage(
-                    subject,
-                    message,
-                    settings.EMAIL_HOST_USER,
-                    [email],
-                )
-                email_message.content_subtype = "html"
-                email_message.send()
-
-                messages.success(request, "Password reset email sent!")
-
-            except Exception as e:
-                print("Email Error:", e)
-                messages.error(request, "Something went wrong. Try again.")
-        else:
+        if not user:
             messages.error(request, "No account found with this email")
+            return render(request, "request-reset-email.html")
+
+        try:
+            # Domain setup
+            domain = os.getenv("RENDER_EXTERNAL_HOSTNAME", "naturalnikhaar.com")
+            if not domain.startswith("http"):
+                domain = f"https://{domain}"
+
+            subject = "Natural Nikhaar - Reset Your Password"
+
+            message = render_to_string(
+                "reset-user-password.html",
+                {
+                    "domain": domain,
+                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                    "token": PasswordResetTokenGenerator().make_token(user),
+                },
+            )
+
+            # Safe from email fallback
+            from_email = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
+
+            email_message = EmailMessage(
+                subject,
+                message,
+                from_email,
+                [email],
+            )
+
+            email_message.content_subtype = "html"
+
+            # Safe sending
+            email_message.send(fail_silently=False)
+
+            messages.success(request, "Password reset email sent!")
+
+        except Exception as e:
+            print("Email sending failed:", e)
+            messages.error(request, "Email service error. Please try later.")
 
         return render(request, "request-reset-email.html")
 
 
-# ========== SET NEW PASSWORD ==========
+# ================= SET NEW PASSWORD =================
 class SetNewPasswordView(View):
+
     def get(self, request, uidb64, token):
         context = {"uidb64": uidb64, "token": token}
 
