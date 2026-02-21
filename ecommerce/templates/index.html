@@ -31,8 +31,7 @@ Home
         placeholder="Search products..."
         aria-label="Search"
         name="query"
-        value="{{ request.GET.get('query', '') }}"
-
+        value="{{ request.GET.query|default:'' }}"
       >
       <button class="btn premium-search-btn" type="submit">
         <i class="fa fa-search"></i>
