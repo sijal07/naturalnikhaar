@@ -10,6 +10,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 import os
+import traceback
 
 
 # ================= SIGNUP =================
@@ -145,6 +146,7 @@ class RequestResetEmailView(View):
 
         except Exception as e:
             print("Email sending failed:", e)
+            traceback.print_exc()  # show full SMTP error in terminal
             messages.error(request, "Email service error. Please try later.")
 
         return render(request, "request-reset-email.html")
