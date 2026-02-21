@@ -131,27 +131,23 @@ CSRF_TRUSTED_ORIGINS = [
     "https://naturalnikhaar.onrender.com",
 ]
 
-# ========= EMAIL (MailerSend SMTP) =========
-# Render env:
-# EMAIL_HOST=smtp.mailersend.net
-# EMAIL_PORT=587
-# EMAIL_USE_TLS=true
-# SMTP_USERNAME=...
-# SMTP_PASSWORD=...
-# DEFAULT_FROM_EMAIL=Natural Nikhaar <no-reply@naturalnikhaar.com>
+# ========= EMAIL CONFIG =========
+# Real SMTP (MailerSend) – used when USE_CONSOLE_EMAIL is not true
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.mailersend.net")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").strip().lower() == "true"
 
-# Use SMTP_USERNAME / SMTP_PASSWORD from Render
 EMAIL_HOST_USER = os.getenv("SMTP_USERNAME", "")
 EMAIL_HOST_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 
-# Make sure FROM email is a plain string (no extra quotes)
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL", "Natural Nikhaar <no-reply@naturalnikhaar.com>"
 )
+
+# On Render, you can set USE_CONSOLE_EMAIL=true to avoid 500 error while debugging
+if os.getenv("USE_CONSOLE_EMAIL", "false").strip().lower() == "true":
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Razorpay
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
@@ -187,4 +183,11 @@ LOGGING = {
             "propagate": True,
         },
     },
+}
+
+# =========== CLOUDINARY ===========
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
 }
