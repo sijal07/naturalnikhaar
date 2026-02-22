@@ -111,10 +111,14 @@ class RequestResetEmailView(View):
             return render(request, "request-reset-email.html")
 
         try:
-            # Domain setup
-            domain = os.getenv("RENDER_EXTERNAL_HOSTNAME", "naturalnikhaar.com")
-            if not domain.startswith("http"):
-                domain = f"https://{domain}"
+            # Build absolute domain from incoming request first.
+            domain = f"{request.scheme}://{request.get_host()}"
+            if "onrender.com" in request.get_host():
+                custom_domain = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+                if custom_domain:
+                    if not custom_domain.startswith("http"):
+                        custom_domain = f"https://{custom_domain}"
+                    domain = custom_domain
 
             subject = "Natural Nikhaar - Reset Your Password"
 

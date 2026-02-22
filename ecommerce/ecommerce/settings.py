@@ -11,8 +11,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY", "django-insecure-local-key-do-not-use-in-production"
 )
-# FORCE DEBUG TRUE LOCALLY
-DEBUG = True
+# Respect env in production; default to True for local runs.
+DEBUG = os.getenv("DJANGO_DEBUG", "True").strip().lower() == "true"
 
 # HOSTS - allow all for local debug
 ALLOWED_HOSTS = ["*"]
@@ -138,8 +138,8 @@ EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.mailersend.net")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").strip().lower() == "true"
 
-EMAIL_HOST_USER = os.getenv("SMTP_USERNAME", "")
-EMAIL_HOST_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+EMAIL_HOST_USER = os.getenv("SMTP_USERNAME") or os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("SMTP_PASSWORD") or os.getenv("EMAIL_HOST_PASSWORD", "")
 
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL", "Natural Nikhaar <no-reply@naturalnikhaar.com>"
