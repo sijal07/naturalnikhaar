@@ -14,8 +14,11 @@ SECRET_KEY = os.getenv(
 # Respect env in production; default to True for local runs.
 DEBUG = os.getenv("DJANGO_DEBUG", "True").strip().lower() == "true"
 
-# HOSTS - allow all for local debug
-ALLOWED_HOSTS = ["*"]
+# HOSTS
+default_hosts = "naturalnikhaar.com,naturalnikhaar.onrender.com,localhost,127.0.0.1"
+ALLOWED_HOSTS = [
+    h.strip() for h in os.getenv("DJANGO_ALLOWED_HOSTS", os.getenv("ALLOWED_HOSTS", default_hosts)).split(",") if h.strip()
+]
 
 # APPS
 INSTALLED_APPS = [
@@ -137,6 +140,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.mailersend.net")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").strip().lower() == "true"
+EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "10"))
 
 EMAIL_HOST_USER = os.getenv("SMTP_USERNAME") or os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("SMTP_PASSWORD") or os.getenv("EMAIL_HOST_PASSWORD", "")
