@@ -131,8 +131,15 @@ class RequestResetEmailView(View):
                 },
             )
 
-            # Safe from email fallback
-            from_email = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
+            # Pick a valid sender address. Misconfigured DEFAULT_FROM_EMAIL
+            # (for example domain without '@') breaks SMTP delivery.
+            default_from = (settings.DEFAULT_FROM_EMAIL or "").strip()
+            host_user_from = (settings.EMAIL_HOST_USER or "").strip()
+            from_email = default_from if "@" in default_from else host_user_from
+            if "@" not in from_email:
+                raise ValueError(
+                    "Invalid sender email. Set DEFAULT_FROM_EMAIL or SMTP username as a valid email address."
+                )
 
             email_message = EmailMessage(
                 subject,
@@ -149,7 +156,7 @@ class RequestResetEmailView(View):
             messages.success(request, "Password reset email sent!")
 
         except Exception as e:
-            print("Email sending failed:", e)
+            print(f"Email sending failed [{type(e).__name__}]: {e}")
             traceback.print_exc()  # show full SMTP error in terminal
             messages.error(request, "Email service error. Please try later.")
 
