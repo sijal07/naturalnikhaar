@@ -585,6 +585,11 @@ Home
 
   /* 🔥 DESKTOP ONLY - SMALLER QUICK VIEW IMAGES (250px) 🔥 */
   @media (min-width: 992px) {
+    .modal-smaller .carousel-inner {
+      border-radius: 12px !important;
+      overflow: hidden !important;
+    }
+
     .modal-smaller .carousel-item img {
       height: 280px !important;
       object-fit: contain !important;
@@ -598,6 +603,11 @@ Home
   @media (max-width: 991px) {
     .modal-smaller {
       --bs-modal-width: 90vw !important;
+    }
+
+    .modal-smaller .carousel-inner {
+      border-radius: 10px !important;
+      overflow: hidden !important;
     }
     
     .modal-smaller .carousel-item img {
