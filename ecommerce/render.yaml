@@ -6,6 +6,8 @@ services:
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: python manage.py migrate --noinput && python manage.py ensure_admin && gunicorn ecommerce.wsgi:application --log-file=-
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
