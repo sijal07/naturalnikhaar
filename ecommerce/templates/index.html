@@ -1226,6 +1226,9 @@ Home
             <div class="btn-magic-glow"></div>
             <div class="btn-shimmer-wave"></div>
           </a>
+          <button type="button" class="clear-cart-btn-ultimate mt-2" id="clear-cart-btn">
+            <i class="fa-solid fa-trash-can me-2"></i>Cancel All Cart
+          </button>
         </div>
       </div>
     </div>
@@ -1623,6 +1626,22 @@ Home
   left: 100%;
 }
 
+.clear-cart-btn-ultimate {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  background: rgba(178, 34, 34, 0.22);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.6rem 1rem;
+  transition: all 0.25s ease;
+}
+
+.clear-cart-btn-ultimate:hover {
+  background: rgba(178, 34, 34, 0.38);
+  color: #fff;
+}
+
 /* 🔥 PERFECT RESPONSIVE */
 @media (max-width: 991px) {
   #cart-footer .container { padding: 0.75rem 1.25rem; }
@@ -1776,6 +1795,20 @@ Home
         });
       }
     });
+
+    const clearCartBtn = document.getElementById("clear-cart-btn");
+    if (clearCartBtn) {
+      clearCartBtn.addEventListener("click", function () {
+        for (let item in cart) {
+          const div = document.getElementById("divpr" + item);
+          if (div) {
+            div.innerHTML = '<button id="pr' + item + '" class="btn cart btn-sm w-100 py-2 mt-0">Add to Cart <i class="fa-solid fa-cart-shopping ms-1"></i></button>';
+          }
+        }
+        cart = {};
+        updateCart(cart);
+      });
+    }
   });
 
   // 🔥 ENABLE CAROUSEL AUTO-SLIDE 🔥

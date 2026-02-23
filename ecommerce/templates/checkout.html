@@ -338,7 +338,7 @@ try {
                             <strong>${name}</strong><br>
                             <small>Qty: ${qty} × ₹${itemPrice.toLocaleString('en-IN')}</small>
                         </div>
-                        <span class="badge badge-success fs-6">₹${subtotal.toLocaleString('en-IN')}</span>
+                        <div class="text-end"><span class="badge badge-success fs-6 d-inline-block mb-2">₹${subtotal.toLocaleString('en-IN')}</span><br><button type="button" class="btn btn-sm btn-outline-danger cancel-cart-item" data-item-id="${item}">Cancel</button></div>
                     </li>
                 `);
             }
@@ -358,6 +358,15 @@ document.getElementById('totalprice').textContent = totalPrice.toLocaleString('e
 document.getElementById('display-amt').textContent = totalPrice.toLocaleString('en-IN');
 document.getElementById('amt').value = totalPrice || 0;
 $('#itemsJson').val(JSON.stringify(cart));
+
+$(document).on('click', '.cancel-cart-item', function () {
+    const itemId = $(this).data('item-id').toString();
+    if (cart[itemId] !== undefined) {
+        delete cart[itemId];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.location.reload();
+    }
+});
 
 {% if thank %}
 alert('Thanks for ordering! Order ID: {{id}}');
