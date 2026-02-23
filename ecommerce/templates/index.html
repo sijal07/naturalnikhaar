@@ -1663,9 +1663,11 @@ Home
 
   // 🔥 PERFECTLY FIXED CART - WORKS WITH BOTH MAIN CARDS & MODAL BUTTONS 🔥
   let cart = {};
-  
-  // CLEAR OLD CART DATA ON EVERY PAGE LOAD
-  localStorage.removeItem("cart");
+  try {
+    cart = JSON.parse(localStorage.getItem("cart") || "{}");
+  } catch (e) {
+    cart = {};
+  }
   
   $(document).on("click", ".divpr button.cart", function () {
     const idstr = this.id.toString().replace('pr', '');
@@ -1753,30 +1755,11 @@ Home
 
   // 🛒 COMPLETE CART PROTECTION - BLOCKS CHECKOUT WHEN EMPTY
   document.addEventListener("DOMContentLoaded", function () {
-    cart = {};
-    localStorage.removeItem("cart");
-    
+    updateCart(cart);
+
     const badge = document.getElementById("cart-count");
     const badgeMobile = document.getElementById("cart-count-mobile");
     const footerCount = document.getElementById("footer-cart-count");
-    const cartFooter = document.getElementById("cart-footer");
-    
-    if (badge) {
-      badge.textContent = '0';
-      badge.style.display = 'inline-flex';
-    }
-    if (badgeMobile) {
-      badgeMobile.textContent = '0';
-      badgeMobile.style.display = 'inline-flex';
-    }
-    if (footerCount) {
-      footerCount.textContent = '0';
-    }
-    if (cartFooter) {
-      cartFooter.classList.remove('show');
-    }
-    
-    console.log('✅ COMPLETE CART RESET - 0 items');
     
     // 🔥 BLOCK CHECKOUT LINKS WHEN CART = 0 🔥
     ['popcart', 'popcart-mobile', 'checkout-btn'].forEach(linkId => {
