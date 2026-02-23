@@ -255,7 +255,25 @@ class OrdersAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Product)
-admin.site.register(OrderUpdate)
+
+
+@admin.register(OrderUpdate)
+class OrderUpdateAdmin(admin.ModelAdmin):
+    list_display = ("update_id", "order_id", "update_desc", "delivered", "cancelled", "timestamp")
+    list_filter = ("delivered", "cancelled", "timestamp")
+    search_fields = ("order_id", "update_desc")
+    list_editable = ("delivered", "cancelled")
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        order = Orders.objects.filter(order_id=obj.order_id).first()
+        if not order:
+            return
+        if obj.cancelled:
+            order.paymentstatus = "Cancelled"
+        elif obj.delivered:
+            order.paymentstatus = "Delivered"
+        order.save(update_fields=["paymentstatus"])
 
 
 @admin.register(CarouselAd)

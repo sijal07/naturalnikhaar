@@ -92,6 +92,7 @@ class OrderUpdate(models.Model):
     order_id = models.IntegerField(default="")
     update_desc = models.CharField(max_length=5000)
     delivered = models.BooleanField(default=False)
+    cancelled = models.BooleanField(default=False)
     timestamp = models.DateField(auto_now_add=True)
 
     def __str__(self):

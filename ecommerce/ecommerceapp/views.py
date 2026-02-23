@@ -96,6 +96,10 @@ def checkout(request):
         amount_raw = request.POST.get('amt', '0')
         email = request.POST.get('email', '')
         address1 = request.POST.get('address1', '')
+        address2 = request.POST.get('address2', '')
+        city = request.POST.get('city', '')
+        state = request.POST.get('state', '')
+        zip_code = request.POST.get('zip_code', '')
         phone = request.POST.get('phone', '')
 
         try:
@@ -116,6 +120,10 @@ def checkout(request):
             amount=int(amount_rupees),
             email=email,
             address1=address1,
+            address2=address2,
+            city=city,
+            state=state,
+            zip_code=zip_code,
             phone=phone,
             paymentstatus="Pending"
         )
@@ -219,9 +227,20 @@ def profile(request):
             delivered=True
         ).values_list('order_id', flat=True)
     )
+    cancelled_order_ids = set(
+        OrderUpdate.objects.filter(
+            order_id__in=orders.values_list('order_id', flat=True),
+            cancelled=True
+        ).values_list('order_id', flat=True)
+    )
 
     for order in orders:
         order.is_delivered = order.order_id in delivered_order_ids
+        order.is_cancelled = order.order_id in cancelled_order_ids
+        if order.is_cancelled:
+            order.paymentstatus_display = "Cancelled"
+        else:
+            order.paymentstatus_display = order.paymentstatus or "Pending"
         base_date = order.created_at or timezone.now()
         order.expected_delivery = base_date + timedelta(days=10)
 
