@@ -586,8 +586,10 @@ Home
   /* 🔥 DESKTOP ONLY - SMALLER QUICK VIEW IMAGES (250px) 🔥 */
   @media (min-width: 992px) {
     .modal-smaller .carousel-item img {
-      height: 250px !important;
-      object-fit: cover !important;
+      height: 280px !important;
+      object-fit: contain !important;
+      padding: 0.5rem !important;
+      background: #f8f6f0 !important;
     }
   }
 
@@ -598,8 +600,10 @@ Home
     }
     
     .modal-smaller .carousel-item img {
-      height: 220px !important;
-      object-fit: cover;
+      height: 240px !important;
+      object-fit: contain !important;
+      padding: 0.4rem !important;
+      background: #f8f6f0 !important;
     }
     
     .modal-smaller .modal-dialog {
@@ -613,7 +617,7 @@ Home
     }
     
     .modal-smaller .carousel-item img {
-      height: 200px !important;
+      height: 220px !important;
     }
   }
 
@@ -706,21 +710,22 @@ Home
       0 30px 80px rgba(45, 71, 57, 0.25),
       0 10px 40px rgba(179, 147, 89, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    aspect-ratio: 16/6;
+    aspect-ratio: 16/7;
     object-fit: cover;
     border: 1px solid rgba(255, 215, 0, 0.1);
   }
 
   .premium-carousel-img {
-    object-fit: cover !important;
+    object-fit: contain !important;
     transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
                 filter 0.8s ease !important;
     width: 100% !important;
     height: 100% !important;
+    background: #f8f6f0 !important;
   }
 
   .carousel-item.active .premium-carousel-img {
-    transform: scale(1.05);
+    transform: scale(1);
     filter: brightness(1) !important;
   }
 
@@ -867,7 +872,7 @@ Home
     }
 
     .premium-carousel-inner {
-      aspect-ratio: 16/8;
+      aspect-ratio: 16/9;
     }
 
     .caption-title {
@@ -883,7 +888,7 @@ Home
 
   @media (max-width: 768px) {
     .premium-carousel-inner {
-      aspect-ratio: 16/10;
+      aspect-ratio: 4/3;
       border-radius: 16px !important;
     }
 
