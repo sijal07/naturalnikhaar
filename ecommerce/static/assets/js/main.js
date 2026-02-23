@@ -133,6 +133,17 @@
    * Scrool with ofset on links with a class name .scrollto
    */
   on('click', '.scrollto', function(e) {
+    // If link points to a different path or query string, allow normal navigation.
+    // This is needed for cases like "/?query=abc" -> "/#products" where search must reset.
+    let targetUrl = new URL(this.href, window.location.origin)
+    if (
+      targetUrl.origin !== window.location.origin ||
+      targetUrl.pathname !== window.location.pathname ||
+      targetUrl.search !== window.location.search
+    ) {
+      return
+    }
+
     if (select(this.hash)) {
       e.preventDefault()
 
