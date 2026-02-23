@@ -976,7 +976,6 @@
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Natural Nikhaar Instagram"
-              onclick="openInstagramProfile(event, 'naturalnikhaar', 'https://www.instagram.com/naturalnikhaar/');"
             >
               <i class="bx bxl-instagram"></i>
               <span class="sr">Natural Nikhaar</span>
@@ -991,7 +990,6 @@
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WomenHealth Instagram"
-              onclick="openInstagramProfile(event, 'womenhealth.by.drnikhat', 'https://www.instagram.com/womenhealth.by.drnikhat/');"
             >
               <i class="bx bxl-instagram"></i>
               <span class="sr">WomenHealth</span>
@@ -1089,6 +1087,15 @@
         const link = e.target.closest('a[href^="#"], a[href*="/#"]');
         if (!link) return;
 
+        // Only hijack navigation for exact same-page anchor links.
+        // If URL path/search differs (e.g. /?query=abc -> /#products), let browser navigate.
+        const targetUrl = new URL(link.href, window.location.origin);
+        const isSamePage =
+          targetUrl.origin === window.location.origin &&
+          targetUrl.pathname === window.location.pathname &&
+          targetUrl.search === window.location.search;
+        if (!isSamePage) return;
+
         let href = link.getAttribute('href');
         let hashIndex = href.indexOf('#');
         if (hashIndex === -1) return;
@@ -1111,20 +1118,6 @@
           behavior: 'smooth'
         });
       });
-
-      function openInstagramProfile(event, username, webUrl) {
-        if (!event || !username || !webUrl) return;
-        event.preventDefault();
-        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        if (isMobile) {
-          window.location.href = "instagram://user?username=" + encodeURIComponent(username);
-          setTimeout(function () {
-            window.open(webUrl, "_blank", "noopener,noreferrer");
-          }, 800);
-          return;
-        }
-        window.open(webUrl, "_blank", "noopener,noreferrer");
-      }
     </script>
   </body>
 </html>
