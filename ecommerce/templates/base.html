@@ -909,7 +909,7 @@
             ><i class="fa-solid fa-user-plus me-3"></i>Sign Up</a
           >
           {% endif %}
-          <a href="/#products" class="nav-link scrollto"
+          <a href="/#products" class="nav-link scrollto" id="products-menu-link"
             ><i class="fa-solid fa-box-open me-3"></i>Products</a
           >
         </div>
@@ -1080,6 +1080,19 @@
         if (el && typeof bootstrap !== 'undefined') {
           new bootstrap.Carousel(el, { interval: 4000, ride: 'carousel' });
         }
+
+        // Force product-nav links to reset search query and land on products section.
+        const forceProductsNav = function (event) {
+          if (event) event.preventDefault();
+          window.location.assign('/#products');
+        };
+
+        ['products-desktop', 'products-mobile', 'products-menu-link'].forEach(function (id) {
+          const link = document.getElementById(id);
+          if (link) {
+            link.addEventListener('click', forceProductsNav);
+          }
+        });
       });
 
       // Smooth scroll for internal links with header offset
