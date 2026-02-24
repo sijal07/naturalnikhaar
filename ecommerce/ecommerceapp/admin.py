@@ -273,11 +273,20 @@ class OrderUpdateAdmin(admin.ModelAdmin):
         order = Orders.objects.filter(order_id=obj.order_id).first()
         if not order:
             return
-        if obj.cancelled:
-            order.paymentstatus = "Cancelled"
-        elif obj.delivered:
-            order.paymentstatus = "Delivered"
-        order.save(update_fields=["paymentstatus"])
+        updates = OrderUpdate.objects.filter(order_id=obj.order_id)
+        if updates.filter(cancelled=True).exists():
+            new_status = "Cancelled"
+        elif updates.filter(delivered=True).exists():
+            new_status = "Delivered"
+        elif order.paymentstatus in ("Delivered", "Cancelled"):
+            # If delivery/cancel flags are removed, fall back to paid/pending state.
+            new_status = "Paid" if order.amountpaid else "Pending"
+        else:
+            new_status = order.paymentstatus
+
+        if new_status != order.paymentstatus:
+            order.paymentstatus = new_status
+            order.save(update_fields=["paymentstatus"])
 
 
 @admin.register(CarouselAd)
