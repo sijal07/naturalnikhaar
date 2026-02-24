@@ -1745,6 +1745,15 @@ Home
     console.log('🛒 Cart updated:', sum, 'items');
   }
 
+  function syncCartFromStorage() {
+    try {
+      cart = JSON.parse(localStorage.getItem("cart") || "{}");
+    } catch (e) {
+      cart = {};
+    }
+    updateCart(cart);
+  }
+
   $(document).on("click", ".divpr button.minus", function () {
     const key = this.id.replace("minus", "");
     if (cart[key] !== undefined) {
@@ -1774,7 +1783,7 @@ Home
 
   // 🛒 COMPLETE CART PROTECTION - BLOCKS CHECKOUT WHEN EMPTY
   document.addEventListener("DOMContentLoaded", function () {
-    updateCart(cart);
+    syncCartFromStorage();
 
     const badge = document.getElementById("cart-count");
     const badgeMobile = document.getElementById("cart-count-mobile");
@@ -1809,6 +1818,10 @@ Home
         updateCart(cart);
       });
     }
+  });
+
+  window.addEventListener("pageshow", function () {
+    syncCartFromStorage();
   });
 
   // 🔥 ENABLE CAROUSEL AUTO-SLIDE 🔥
