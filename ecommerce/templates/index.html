@@ -1741,6 +1741,10 @@ Home
 
   function updateCart(cartObj) {
     let sum = 0;
+    document.querySelectorAll('[id^="divpr"]').forEach((div) => {
+      const itemId = div.id.replace("divpr", "");
+      div.innerHTML = '<button id="pr' + itemId + '" class="btn cart btn-sm w-100 py-2 mt-0">Add to Cart <i class="fa-solid fa-cart-shopping ms-1"></i></button>';
+    });
     for (let item in cartObj) {
       sum += cartObj[item][0];
       const div = document.getElementById("divpr" + item);
