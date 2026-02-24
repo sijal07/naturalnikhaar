@@ -1687,11 +1687,33 @@ Home
   // Keep search behavior focused on product results section.
   document.addEventListener("DOMContentLoaded", function () {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("query")) {
-      const products = document.getElementById("products");
-      if (products) {
-        products.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+    const query = (params.get("query") || "").trim().toLowerCase();
+    if (query) {
+      const scrollToMatch = function () {
+        const titleNodes = document.querySelectorAll('[id^="namepr"]');
+        let targetCard = null;
+
+        for (const node of titleNodes) {
+          const text = (node.textContent || "").trim().toLowerCase();
+          if (text.includes(query)) {
+            targetCard = node.closest(".premium-product-card") || node;
+            break;
+          }
+        }
+
+        const fallbackTarget = document.getElementById("products");
+        const target = targetCard || fallbackTarget;
+        if (!target) return;
+
+        const header = document.getElementById("header");
+        const headerHeight = header ? header.offsetHeight : 0;
+        const top =
+          target.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+        window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+      };
+
+      // Delay slightly so layout and images settle, improving mobile reliability.
+      window.setTimeout(scrollToMatch, 120);
     }
   });
 
