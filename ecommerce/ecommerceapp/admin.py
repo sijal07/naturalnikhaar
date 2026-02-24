@@ -119,7 +119,7 @@ class ContactAdmin(admin.ModelAdmin):
 
 @admin.register(Orders)
 class OrdersAdmin(admin.ModelAdmin):
-    list_display = ("order_id", "name", "products_summary", "email", "city", "state", "amount", "paymentstatus")
+    list_display = ("order_id", "name", "products_summary", "email", "city", "state", "amount", "paymentstatus", "order_timestamp")
     list_filter = ("state", "paymentstatus", "city")
     search_fields = ("order_id", "name", "email", "phone", "oid")
     change_list_template = "admin/ecommerceapp/orders/change_list.html"
@@ -160,6 +160,10 @@ class OrdersAdmin(admin.ModelAdmin):
     @admin.display(description="Products")
     def products_summary(self, obj):
         return obj.get_products_summary()
+
+    @admin.display(description="Timestamp", ordering="created_at")
+    def order_timestamp(self, obj):
+        return obj.created_at
 
     def get_urls(self):
         urls = super().get_urls()
@@ -281,3 +285,5 @@ class CarouselAdAdmin(admin.ModelAdmin):
     list_display = ("id", "title", "is_active", "created_at")
     list_filter = ("is_active", "created_at")
     search_fields = ("title", "link")
+
+
