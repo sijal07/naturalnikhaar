@@ -824,7 +824,7 @@
 
         <!-- MOBILE ICONS -->
         <div class="d-md-none d-flex align-items-center gap-2">
-          <a href="/#boss" class="nav-link scrollto">
+          <a href="/#boss" class="ms-2 header-icon-link" id="search-mobile">
             <i class="fa-solid fa-magnifying-glass"></i>
           </a>
 
@@ -1101,12 +1101,33 @@
           window.location.assign('/#products');
         };
 
+        const forceSearchNav = function (event) {
+          if (event) event.preventDefault();
+          const mobileNavEl = document.getElementById('mobileNav');
+          const isMobileOffcanvasOpen = mobileNavEl && mobileNavEl.classList.contains('show');
+          if (isMobileOffcanvasOpen && typeof bootstrap !== 'undefined') {
+            const offcanvasInstance = bootstrap.Offcanvas.getOrCreateInstance(mobileNavEl);
+            mobileNavEl.addEventListener('hidden.bs.offcanvas', function onHidden() {
+              mobileNavEl.removeEventListener('hidden.bs.offcanvas', onHidden);
+              window.location.assign('/#boss');
+            });
+            offcanvasInstance.hide();
+            return;
+          }
+          window.location.assign('/#boss');
+        };
+
         ['products-desktop', 'products-mobile'].forEach(function (id) {
           const link = document.getElementById(id);
           if (link) {
             link.addEventListener('click', forceProductsNav);
           }
         });
+
+        const mobileSearchLink = document.getElementById('search-mobile');
+        if (mobileSearchLink) {
+          mobileSearchLink.addEventListener('click', forceSearchNav);
+        }
 
         // Make all offcanvas menu links behave like desktop:
         // close menu first, then navigate.
