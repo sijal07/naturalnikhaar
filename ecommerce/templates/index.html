@@ -621,6 +621,21 @@ Home
     .modal-smaller .modal-dialog {
       margin: 1rem !important;
     }
+
+    /* Keep quick-view header/title visible below fixed page header on mobile */
+    .modal-smaller .modal-dialog.modal-dialog-centered {
+      align-items: flex-start !important;
+    }
+
+    .modal-smaller .modal-dialog {
+      margin: 5.5rem auto 1rem !important;
+      max-height: calc(100vh - 6.5rem) !important;
+    }
+
+    .modal-smaller .modal-content {
+      max-height: calc(100vh - 6.5rem) !important;
+      overflow-y: auto !important;
+    }
   }
   
   @media (max-width: 576px) {
