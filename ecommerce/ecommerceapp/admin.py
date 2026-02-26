@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import path, reverse
 
-from ecommerceapp.models import Contact, Product, Orders, OrderUpdate, CarouselAd
+from ecommerceapp.models import Contact, Product, Orders, OrderUpdate, CarouselAd, ShopCategory
 
 admin.site.site_header = "NATURAL NIKHAAR Admin"
 admin.site.site_title = "NATURAL NIKHAAR Admin Portal"
@@ -294,5 +294,13 @@ class CarouselAdAdmin(admin.ModelAdmin):
     list_display = ("id", "title", "is_active", "created_at")
     list_filter = ("is_active", "created_at")
     search_fields = ("title", "link")
+
+
+@admin.register(ShopCategory)
+class ShopCategoryAdmin(admin.ModelAdmin):
+    list_display = ("id", "section_name", "is_active", "display_order", "created_at")
+    list_filter = ("is_active",)
+    search_fields = ("section_name",)
+    list_editable = ("is_active", "display_order")
 
 

@@ -4,9 +4,10 @@ from django.db.models import Q
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.utils.text import slugify
 from django.conf import settings
 
-from ecommerceapp.models import Contact, Product, OrderUpdate, Orders, CarouselAd
+from ecommerceapp.models import Contact, Product, OrderUpdate, Orders, CarouselAd, ShopCategory
 
 import razorpay
 import traceback
@@ -34,12 +35,36 @@ def index(request):
         allProds = []
         catprods = products_qs.values("category", "id")
         cats = {item["category"] for item in catprods}
+        category_anchor_map = {}
 
         for cat in cats:
             prod = products_qs.filter(category=cat)
             n = len(prod)
             nSlides = n // 4 + (1 if n % 4 != 0 else 0)
             allProds.append([prod, range(1, nSlides + 1), nSlides])
+            category_anchor_map[slugify(cat)] = f"category-{slugify(cat)}"
+
+        shop_categories = (
+            ShopCategory.objects.filter(is_active=True)
+            .exclude(image="")
+            .exclude(image__isnull=True)
+        )
+
+        shop_category_cards = []
+        for item in shop_categories:
+            section_slug = slugify(item.section_name)
+            section_anchor = category_anchor_map.get(section_slug)
+            if section_anchor:
+                href = f"#{section_anchor}"
+            else:
+                href = f"/?query={item.section_name}"
+            shop_category_cards.append(
+                {
+                    "name": item.section_name,
+                    "image": item.image,
+                    "href": href,
+                }
+            )
 
         ads = (
             CarouselAd.objects.filter(is_active=True)
@@ -51,6 +76,7 @@ def index(request):
             "allProds": allProds,
             "query": query,
             "ads": ads,
+            "shop_categories": shop_category_cards,
         })
 
     except Exception as e:

@@ -111,3 +111,22 @@ class CarouselAd(models.Model):
 
     def __str__(self):
         return self.title or f"Carousel Ad #{self.id}"
+
+
+class ShopCategory(models.Model):
+    section_name = models.CharField(
+        max_length=120,
+        help_text="Category name shown on homepage. Match product category for direct section landing.",
+    )
+    image = models.ImageField(upload_to="shop_categories/")
+    is_active = models.BooleanField(default=True)
+    display_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["display_order", "id"]
+        verbose_name = "Shop Category"
+        verbose_name_plural = "Shop Categories"
+
+    def __str__(self):
+        return self.section_name

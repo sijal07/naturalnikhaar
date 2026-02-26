@@ -94,8 +94,90 @@ Home
   {% endif %}
 </section>
 
+{% if shop_categories %}
+<section class="container pb-4">
+  <div class="shop-by-category-box">
+    <div class="text-center mb-4">
+      <h2 class="shop-by-category-title mb-1">SHOP BY CATEGORY</h2>
+      <p class="shop-by-category-subtitle mb-0">Tap a category to jump directly to that product section</p>
+    </div>
+    <div class="row g-3 justify-content-center">
+      {% for category in shop_categories %}
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{{ category.href }}" class="shop-category-link text-decoration-none">
+          <div class="shop-category-card">
+            <img src="{{ category.image.url }}" alt="{{ category.name }}" class="shop-category-image" loading="lazy">
+            <span class="shop-category-name">{{ category.name }}</span>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 
 <style>
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .shop-by-category-box {
+    background: linear-gradient(140deg, rgba(248, 246, 240, 0.9), rgba(255, 255, 255, 0.92));
+    border: 1px solid rgba(179, 147, 89, 0.2);
+    border-radius: 22px;
+    padding: 1.25rem;
+    box-shadow: 0 16px 32px rgba(45, 71, 57, 0.1);
+  }
+
+  .shop-by-category-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    color: #2D4739;
+    letter-spacing: 0.8px;
+  }
+
+  .shop-by-category-subtitle {
+    color: #5f6f63;
+    font-size: 0.9rem;
+  }
+
+  .shop-category-card {
+    background: linear-gradient(160deg, #ffffff, #f7f3e8);
+    border: 1px solid rgba(179, 147, 89, 0.18);
+    border-radius: 16px;
+    padding: 0.75rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-align: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .shop-category-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(179, 147, 89, 0.45);
+    box-shadow: 0 14px 24px rgba(45, 71, 57, 0.14);
+  }
+
+  .shop-category-image {
+    width: 100%;
+    max-width: 170px;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  .shop-category-name {
+    font-weight: 700;
+    color: #2D4739;
+    font-size: 0.92rem;
+    line-height: 1.25;
+  }
+
   .premium-search-form {
     animation: searchReveal 0.65s ease-out both;
   }
@@ -1066,7 +1148,7 @@ Home
 
     {% if allProds %}
       {% for product, range, nSlides in allProds %}
-      <h3 class="my-4 text-center fs-4">{{product.0.category}} Section</h3>
+      <h3 id="category-{{ product.0.category|slugify }}" class="my-4 text-center fs-4">{{product.0.category}} Section</h3>
 
       <div class="container px-0">
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
@@ -1718,6 +1800,25 @@ Home
   });
 
   // 🔥 PERFECTLY FIXED CART - WORKS WITH BOTH MAIN CARDS & MODAL BUTTONS 🔥
+  // Keep category jump targets visible below fixed header.
+  document.addEventListener("DOMContentLoaded", function () {
+    const categoryLinks = document.querySelectorAll('.shop-category-link[href^="#"]');
+    categoryLinks.forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        const targetId = this.getAttribute("href");
+        if (!targetId || targetId === "#") return;
+        const target = document.querySelector(targetId);
+        if (!target) return;
+
+        event.preventDefault();
+        const header = document.getElementById("header");
+        const headerHeight = header ? header.offsetHeight : 0;
+        const top = target.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+        window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+      });
+    });
+  });
+
   let cart = {};
   try {
     cart = JSON.parse(localStorage.getItem("cart") || "{}");
