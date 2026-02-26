@@ -812,24 +812,39 @@ Home
   .premium-carousel-wrapper {
     perspective: 1000px;
     margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .premium-carousel-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(232, 199, 146, 0.18), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(45, 71, 57, 0.16), transparent 42%);
+    filter: blur(10px);
+    pointer-events: none;
+    z-index: 0;
   }
 
   .premium-carousel {
     position: relative;
+    z-index: 1;
   }
 
   .premium-carousel-inner {
     border-radius: 24px !important;
     overflow: hidden !important;
     box-shadow: 
-      0 30px 80px rgba(45, 71, 57, 0.25),
-      0 10px 40px rgba(179, 147, 89, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      0 30px 80px rgba(28, 48, 38, 0.28),
+      0 10px 40px rgba(179, 147, 89, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
     aspect-ratio: 12 / 5;
     width: 100%;
     max-height: 800px;
     min-height: 220px;
-    border: 1px solid rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.18);
+    background: linear-gradient(135deg, #f6f2e7, #efe6cf);
   }
 
   .premium-carousel-inner .carousel-item,
@@ -845,16 +860,17 @@ Home
     width: 100% !important;
     height: 100% !important;
     background: #f8f6f0 !important;
+    filter: saturate(1.06) contrast(1.03);
   }
 
   .carousel-item.active .premium-carousel-img {
     transform: scale(1);
-    filter: brightness(1) !important;
+    filter: brightness(1.02) saturate(1.08) !important;
   }
 
   .carousel-item:not(.active) .premium-carousel-img {
     transform: scale(1);
-    filter: brightness(0.9) !important;
+    filter: brightness(0.9) saturate(0.95) !important;
   }
 
   .carousel-overlay {
@@ -863,7 +879,9 @@ Home
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(34, 74, 10, 0.1) 0%, rgba(179, 147, 89, 0.15) 100%);
+    background:
+      linear-gradient(125deg, rgba(24, 43, 32, 0.25) 0%, rgba(179, 147, 89, 0.2) 58%, rgba(255, 255, 255, 0.06) 100%),
+      radial-gradient(circle at 20% 18%, rgba(255, 233, 174, 0.16), transparent 42%);
     pointer-events: none;
   }
 
@@ -898,22 +916,23 @@ Home
     width: 12px !important;
     height: 12px !important;
     border-radius: 50% !important;
-    background-color: rgba(255, 255, 255, 0.5) !important;
-    border: 2px solid rgba(255, 255, 255, 0.7) !important;
+    background-color: rgba(255, 255, 255, 0.42) !important;
+    border: 2px solid rgba(255, 255, 255, 0.75) !important;
     cursor: pointer !important;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     padding: 0 !important;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
   }
 
   .premium-indicators .indicator-btn.active {
     width: 32px !important;
-    background: linear-gradient(135deg, #B39359, #E8C792) !important;
-    border-color: #FFD700 !important;
-    box-shadow: 0 0 15px rgba(179, 147, 89, 0.6) !important;
+    background: linear-gradient(135deg, #b48f52, #eed39d) !important;
+    border-color: #f6e3b3 !important;
+    box-shadow: 0 0 18px rgba(179, 147, 89, 0.65) !important;
   }
 
   .premium-indicators .indicator-btn:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.8) !important;
+    background-color: rgba(255, 255, 255, 0.84) !important;
     transform: scale(1.2);
   }
 
@@ -922,24 +941,26 @@ Home
   .premium-control-next {
     width: 50px !important;
     height: 50px !important;
-    background: linear-gradient(135deg, rgba(179, 147, 89, 0.9), rgba(232, 199, 146, 0.9)) !important;
-    border: 2px solid rgba(255, 215, 0, 0.4) !important;
+    background: linear-gradient(145deg, rgba(169, 133, 73, 0.94), rgba(232, 199, 146, 0.94)) !important;
+    border: 2px solid rgba(255, 224, 164, 0.62) !important;
     border-radius: 50% !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
-    opacity: 0.8 !important;
+    opacity: 0.86 !important;
     transition: all 0.3s ease !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 24px rgba(30, 45, 36, 0.25);
   }
 
   .premium-control-prev:hover,
   .premium-control-next:hover {
     opacity: 1 !important;
-    background: linear-gradient(135deg, #B39359, #E8C792) !important;
+    background: linear-gradient(145deg, #b89357, #efd7a6) !important;
     transform: translateY(-50%) scale(1.1) !important;
-    box-shadow: 0 10px 30px rgba(179, 147, 89, 0.5) !important;
+    box-shadow: 0 14px 34px rgba(179, 147, 89, 0.54) !important;
   }
 
   .premium-control-prev {
