@@ -1245,13 +1245,13 @@ Home
     height: 100%;
     pointer-events: none;
     overflow: hidden;
-    z-index: -1;
+    z-index: 0; /* bring above body background */
     background: var(--primary-bg);
   }
   .interactive-dot {
     position: absolute;
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     background: var(--accent-gold);
     border-radius: 50%;
     opacity: 0.9;
