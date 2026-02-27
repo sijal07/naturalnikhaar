@@ -119,8 +119,24 @@ Home
 
 
 <style>
+  :root {
+    --primary-bg: #f1eedd;
+    --secondary-bg: #2d4739;
+    --primary-text: #5c4033;
+    --secondary-text: #4a5d4e;
+    --accent-gold: #b39359;
+    --btn-primary: #b39359;
+    --btn-secondary: #2d4739;
+    --cart-gradient: linear-gradient(135deg, #b39359 0%, #e8c792 100%);
+    --header-glass: rgba(241, 238, 221, 0.86);
+    --gold-soft: rgba(179, 147, 89, 0.22);
+  }
   html {
     scroll-behavior: smooth;
+  }
+  body {
+    background: var(--primary-bg);
+    color: var(--primary-text);
   }
 
   .shop-by-category-box {
@@ -1219,8 +1235,45 @@ Home
       font-size: 1rem !important;
     }
   }
+
+  /* interactive cursor background styles */
+  #interactive-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -1;
+    background: var(--primary-bg);
+  }
+  .interactive-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--accent-gold);
+    border-radius: 50%;
+    opacity: 0.9;
+    transform: translate(-50%, -50%);
+    animation: dotFade 1.2s forwards;
+  }
+  @keyframes dotFade {
+    to { opacity: 0; transform: translate(-50%, -150%) scale(0.5); }
+  }
 </style>
 
+<div id="interactive-bg"></div>
+<script>
+document.addEventListener('mousemove', function(e) {
+  const dot = document.createElement('div');
+  dot.className = 'interactive-dot';
+  dot.style.left = e.pageX + 'px';
+  dot.style.top = e.pageY + 'px';
+  document.getElementById('interactive-bg').appendChild(dot);
+  setTimeout(() => dot.remove(), 1500);
+});
+</script>
 
 <section id="products" class="portfolio py-5">
   <div class="container">
