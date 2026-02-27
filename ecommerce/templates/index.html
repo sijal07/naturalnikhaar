@@ -1427,6 +1427,10 @@ Home
       padding: 0.75rem 1rem;
       font-size: 0.85rem;
     }
+
+    .filter-buttons {
+      flex-direction: column;
+    }
   }
 
   @media (max-width: 576px) {
@@ -1442,6 +1446,7 @@ Home
 
     .filter-buttons {
       gap: 0.6rem;
+      flex-direction: column;
     }
 
     .btn-apply-filter,
@@ -1486,7 +1491,7 @@ Home
             <select id="category-filter" class="filter-select">
               <option value="">All Categories</option>
               {% for category in shop_categories %}
-              <option value="{{ category.name }}">{{ category.name }}</option>
+              <option value="{{ category.name|slugify }}">{{ category.name }}</option>
               {% endfor %}
             </select>
           </div>
@@ -2362,7 +2367,7 @@ Home
 
     // Apply Filter Function
     function applyFilter() {
-      const selectedCategory = categoryFilter.value; // Section name like "Hair Care" or empty
+      const selectedCategory = categoryFilter.value; // slug value or empty
       const minPrice = minPriceInput.value ? parseInt(minPriceInput.value) : 0;
       const maxPrice = maxPriceInput.value ? parseInt(maxPriceInput.value) : Infinity;
 
@@ -2370,7 +2375,7 @@ Home
 
       // For each section heading
       allSections.forEach(section => {
-        const sectionText = section.textContent.replace(' Section', '').trim(); // Extract section name
+        const sectionSlug = section.id.replace('category-', '').toLowerCase();
         const sectionContainer = section.nextElementSibling; // Get the container div with products
         const sectionCards = sectionContainer ? sectionContainer.querySelectorAll('.premium-card') : [];
         let hasVisibleProducts = false;
@@ -2380,8 +2385,8 @@ Home
           const priceText = card.querySelector('.premium-new-price')?.textContent || '₹0';
           const price = parseInt(priceText.replace(/[^0-9]/g, ''));
 
-          // Filter logic: check if category and price match
-          const categoryMatch = !selectedCategory || sectionText.toLowerCase() === selectedCategory.toLowerCase();
+          // Filter logic: check if category slug and price match
+          const categoryMatch = !selectedCategory || sectionSlug === selectedCategory;
           const priceMatch = price >= minPrice && price <= maxPrice;
 
           if (categoryMatch && priceMatch) {
