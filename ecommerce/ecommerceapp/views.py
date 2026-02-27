@@ -72,15 +72,11 @@ def index(request):
             .exclude(image__isnull=True)
         )
 
-        # Get all unique categories for filter
-        all_categories = Product.objects.values_list('category', flat=True).distinct()
-
         return render(request, "index.html", {
             "allProds": allProds,
             "query": query,
             "ads": ads,
             "shop_categories": shop_category_cards,
-            "all_categories": all_categories,
         })
 
     except Exception as e:

@@ -1485,8 +1485,8 @@ Home
             <label class="filter-label">Category</label>
             <select id="category-filter" class="filter-select">
               <option value="">All Categories</option>
-              {% for category in all_categories %}
-              <option value="{{ category|slugify }}">{{ category }}</option>
+              {% for category in shop_categories %}
+              <option value="{{ category.name }}">{{ category.name }}</option>
               {% endfor %}
             </select>
           </div>
@@ -2362,64 +2362,46 @@ Home
 
     // Apply Filter Function
     function applyFilter() {
-      const selectedCategory = categoryFilter.value.toLowerCase();
+      const selectedCategory = categoryFilter.value; // Section name like "Hair Care" or empty
       const minPrice = minPriceInput.value ? parseInt(minPriceInput.value) : 0;
       const maxPrice = maxPriceInput.value ? parseInt(maxPriceInput.value) : Infinity;
 
-      let visibleCategories = new Set();
       let totalVisible = 0;
 
-      allCards.forEach(card => {
-        const priceText = card.querySelector('.premium-new-price')?.textContent || '₹0';
-        const price = parseInt(priceText.replace(/[^0-9]/g, ''));
-        const title = card.querySelector('.premium-title')?.textContent.toLowerCase() || '';
-        
-        // Get category from the parent section heading
-        let cardCategory = '';
-        let currentElement = card;
-        while (currentElement && !cardCategory) {
-          const heading = currentElement.previousElementSibling;
-          if (heading && heading.id && heading.id.startsWith('category-')) {
-            cardCategory = heading.id.replace('category-', '').toLowerCase();
-            break;
-          }
-          currentElement = currentElement.parentElement;
-          if (currentElement === currentElement.parentElement) break;
-        }
-
-        // Filter logic
-        const categoryMatch = !selectedCategory || cardCategory.includes(selectedCategory);
-        const priceMatch = price >= minPrice && price <= maxPrice;
-        
-        if (categoryMatch && priceMatch) {
-          card.style.display = 'block';
-          card.style.animation = 'fadeInProduct 0.4s ease-in';
-          totalVisible++;
-          
-          // Get the section this card belongs to
-          let section = card.closest('[id^="category-"]') || 
-                       card.parentElement?.parentElement?.previousElementSibling;
-          if (section && section.id) {
-            visibleCategories.add(section.id);
-          }
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      // Show/hide category sections
+      // For each section heading
       allSections.forEach(section => {
-        const sectionId = section.id;
-        const hasVisibleProducts = Array.from(section.parentElement?.querySelectorAll('.premium-card') || [])
-          .some(card => card.style.display !== 'none');
-        
+        const sectionText = section.textContent.replace(' Section', '').trim(); // Extract section name
+        const sectionContainer = section.nextElementSibling; // Get the container div with products
+        const sectionCards = sectionContainer ? sectionContainer.querySelectorAll('.premium-card') : [];
+        let hasVisibleProducts = false;
+
+        // Check each card in this section
+        sectionCards.forEach(card => {
+          const priceText = card.querySelector('.premium-new-price')?.textContent || '₹0';
+          const price = parseInt(priceText.replace(/[^0-9]/g, ''));
+
+          // Filter logic: check if category and price match
+          const categoryMatch = !selectedCategory || sectionText.toLowerCase() === selectedCategory.toLowerCase();
+          const priceMatch = price >= minPrice && price <= maxPrice;
+
+          if (categoryMatch && priceMatch) {
+            card.style.display = 'block';
+            card.style.animation = 'fadeInProduct 0.4s ease-in';
+            totalVisible++;
+            hasVisibleProducts = true;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        // Show/hide section heading based on whether it has visible products
         section.style.display = hasVisibleProducts ? 'block' : 'none';
       });
 
-      // Show "No products" message
+      // Show "No products" message if needed
       const productsSection = document.getElementById('products');
       let noProductsMsg = productsSection?.querySelector('.no-products-filter');
-      
+
       if (totalVisible === 0) {
         if (!noProductsMsg) {
           noProductsMsg = document.createElement('div');
@@ -2432,10 +2414,7 @@ Home
               Try adjusting your filter criteria to see more products
             </p>
           `;
-          const allProdsSection = productsSection?.querySelector('[id^="category-"]')?.parentElement?.parentElement;
-          if (allProdsSection) {
-            allProdsSection.appendChild(noProductsMsg);
-          }
+          productsSection?.appendChild(noProductsMsg);
         }
         noProductsMsg.style.display = 'block';
       } else {
@@ -2450,7 +2429,7 @@ Home
       categoryFilter.value = '';
       minPriceInput.value = '';
       maxPriceInput.value = '';
-      
+
       allCards.forEach(card => {
         card.style.display = 'block';
         card.style.animation = 'fadeInProduct 0.4s ease-in';
@@ -2474,7 +2453,7 @@ Home
     minPriceInput.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') applyFilter();
     });
-    
+
     maxPriceInput.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') applyFilter();
     });
