@@ -1230,6 +1230,13 @@ Home
     animation: filterSlideIn 0.6s ease-out;
   }
 
+  /* ensure filter container rows wrap to prevent overflow */
+  .filter-block .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+
   @keyframes filterSlideIn {
     from {
       opacity: 0;
@@ -1422,6 +1429,10 @@ Home
       font-size: 0.9rem;
     }
 
+    .price-filter-group {
+      flex-direction: column;
+    }
+
     .btn-apply-filter,
     .btn-reset-filter {
       padding: 0.75rem 1rem;
@@ -1442,6 +1453,11 @@ Home
     .filter-title {
       font-size: 1.1rem;
       margin-bottom: 1rem;
+    }
+
+    .price-filter-group {
+      flex-direction: column;
+      gap: 0.5rem;
     }
 
     .filter-buttons {
