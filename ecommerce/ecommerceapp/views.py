@@ -131,7 +131,7 @@ def contact(request):
             name=request.POST.get("name"),
             email=request.POST.get("email"),
             desc=request.POST.get("desc"),
-            phonenumber=request.POST.get("pnumber")
+            phonenumber=int(request.POST.get("pnumber"))
         )
         messages.info(request, "We will get back to you soon.")
 

@@ -45,7 +45,7 @@
               </div>
               <div class="col-12">
                 <label for="email" class="form-label simple-label">Email</label>
-                <input type="email" class="form-control simple-input" id="email" name="email" value="{{user.email|default:''}}" required />
+                <input type="email" class="form-control simple-input" id="email" name="email" value="{% if user.is_authenticated %}{{user.email}}{% endif %}" required />
               </div>
               <div class="col-12">
                 <label for="desc" class="form-label simple-label">How Can We Help?</label>
