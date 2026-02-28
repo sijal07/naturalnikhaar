@@ -27,12 +27,15 @@ Home
     <div class="input-group premium-search-group">
       <input
         type="search"
+        id="search-input"
         class="form-control premium-search-input"
         placeholder="Search products..."
         aria-label="Search"
         name="query"
         value="{{ request.GET.query|default:'' }}"
       >
+      <!-- suggestion dropdown will be injected here by JavaScript -->
+      <ul id="search-suggestions" class="search-suggestions"></ul>
       <button class="btn premium-search-btn" type="submit">
         <i class="fa fa-search"></i>
         Search
@@ -238,6 +241,34 @@ Home
   .premium-search-input:focus {
     box-shadow: none !important;
     outline: none !important;
+  }
+
+  /* autocomplete suggestion list */
+  .search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.15);
+    max-height: 240px;
+    overflow-y: auto;
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .search-suggestions.visible {
+    display: block;
+  }
+  .search-suggestions li {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  .search-suggestions li:hover {
+    background: #f0f0f0;
   }
 
   .premium-search-btn {

@@ -221,5 +221,70 @@
       }
     }
   });
+  // ==================== autocomplete suggestions ====================
+  const searchInput = select('#search-input');
+  const suggestionsBox = select('#search-suggestions');
 
+  if (searchInput && suggestionsBox) {
+    let fetchController = null;
+
+    const hideSuggestions = () => {
+      suggestionsBox.classList.remove('visible');
+    };
+
+    const renderSuggestions = (items) => {
+      suggestionsBox.innerHTML = '';
+      if (!items.length) {
+        hideSuggestions();
+        return;
+      }
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item.label;
+        li.dataset.type = item.type;
+        if (item.type === 'product') {
+          li.dataset.id = item.id;
+        } else if (item.type === 'category') {
+          li.dataset.slug = item.slug;
+        }
+        li.addEventListener('click', () => {
+          // selecting a suggestion navigates the user appropriately
+          if (item.type === 'product') {
+            window.location.href = '/?query=' + encodeURIComponent(item.label) + '#namepr' + item.id;
+          } else {
+            window.location.href = '/?query=' + encodeURIComponent(item.label) + '#category-' + item.slug;
+          }
+        });
+        suggestionsBox.appendChild(li);
+      });
+      suggestionsBox.classList.add('visible');
+    };
+
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim();
+      if (!q) {
+        hideSuggestions();
+        return;
+      }
+      // abort previous request if running
+      if (fetchController) fetchController.abort();
+      fetchController = new AbortController();
+
+      fetch('/autocomplete/?q=' + encodeURIComponent(q), { signal: fetchController.signal })
+        .then(r => r.json())
+        .then(data => {
+          renderSuggestions(data);
+        })
+        .catch(err => {
+          if (err.name !== 'AbortError') console.error('autocomplete error', err);
+        });
+    });
+
+    // hide suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        hideSuggestions();
+      }
+    });
+  }
 })()

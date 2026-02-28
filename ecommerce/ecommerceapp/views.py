@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.contrib import messages
@@ -82,6 +82,44 @@ def index(request):
     except Exception as e:
         print("Homepage error:", traceback.format_exc())
         return HttpResponse("Site is live. Homepage recovering.")
+
+
+def autocomplete(request):
+    """Return JSON list of product names and active shop categories.
+
+    Supports optional query param `q` for substring filtering. The
+    response contains objects of the form::
+
+        {"type":"product","label":...,"id":...}
+        {"type":"category","label":...,"slug":...}
+
+    The frontend uses this to render suggestions and navigate directly
+    to a product card or category section when a suggestion is clicked.
+    """
+    q = request.GET.get('q', '').strip()
+
+    products = Product.objects.all()
+    categories = ShopCategory.objects.filter(is_active=True)
+
+    if q:
+        products = products.filter(product_name__icontains=q)
+        categories = categories.filter(section_name__icontains=q)
+
+    suggestions = []
+    for p in products[:50]:
+        suggestions.append({
+            'type': 'product',
+            'label': p.product_name,
+            'id': p.id,
+        })
+    for c in categories:
+        suggestions.append({
+            'type': 'category',
+            'label': c.section_name,
+            'slug': slugify(c.section_name),
+        })
+
+    return JsonResponse(suggestions, safe=False)
 
 
 # ==============================
