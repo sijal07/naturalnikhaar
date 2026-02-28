@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.text import slugify
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 from ecommerceapp.models import Contact, Product, OrderUpdate, Orders, CarouselAd, ShopCategory
 
@@ -127,13 +128,52 @@ def autocomplete(request):
 # ==============================
 def contact(request):
     if request.method == "POST":
-        Contact.objects.create(
-            name=request.POST.get("name"),
-            email=request.POST.get("email"),
-            desc=request.POST.get("desc"),
-            phonenumber=int(request.POST.get("pnumber"))
-        )
-        messages.info(request, "We will get back to you soon.")
+        try:
+            name = request.POST.get("name", "").strip()
+            email = request.POST.get("email", "").strip()
+            desc = request.POST.get("desc", "").strip()
+            pnumber = request.POST.get("pnumber", "").strip()
+            
+            # Validate required fields
+            if not name:
+                messages.error(request, "Name is required.")
+                return render(request, "contact.html")
+            if not email:
+                messages.error(request, "Email is required.")
+                return render(request, "contact.html")
+            if not desc:
+                messages.error(request, "Message is required.")
+                return render(request, "contact.html")
+            if not pnumber:
+                messages.error(request, "Phone number is required.")
+                return render(request, "contact.html")
+            
+            # Validate phone number is numeric
+            try:
+                phone_int = int(pnumber)
+                if phone_int < 0:
+                    messages.error(request, "Phone number must be a valid positive number.")
+                    return render(request, "contact.html")
+            except ValueError:
+                messages.error(request, "Phone number must be numeric.")
+                return render(request, "contact.html")
+            
+            # Create contact
+            contact_obj = Contact(
+                name=name,
+                email=email,
+                desc=desc,
+                phonenumber=phone_int
+            )
+            contact_obj.full_clean()  # Validate model fields
+            contact_obj.save()
+            
+            messages.success(request, "Thank you! We will get back to you soon.")
+        except ValidationError as e:
+            messages.error(request, f"Validation error: {e.message if hasattr(e, 'message') else str(e)}")
+        except Exception as e:
+            messages.error(request, "An error occurred. Please try again later.")
+            print(f"Contact form error: {traceback.format_exc()}")
 
     return render(request, "contact.html")
 
