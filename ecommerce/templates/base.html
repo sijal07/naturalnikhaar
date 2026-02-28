@@ -773,10 +773,12 @@
             About
           </a>
 
+          {% if CONTACT_ENABLED %}
           <a href="/contact" class="nav-link scrollto">
             <i class="fa-solid fa-envelope"></i>
             Contact
           </a>
+          {% endif %}
 
           <a
             href="/profile"
@@ -891,9 +893,11 @@
           <a href="/about" class="nav-link scrollto"
             ><i class="fa-solid fa-info-circle me-3"></i>About</a
           >
+          {% if CONTACT_ENABLED %}
           <a href="/contact" class="nav-link scrollto"
             ><i class="fa-solid fa-envelope me-3"></i>Contact</a
           >
+          {% endif %}
           <a href="/profile" class="nav-link scrollto"
             ><i class="fa-regular fa-square-user me-3"></i>Profile</a
           >

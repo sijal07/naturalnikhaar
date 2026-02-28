@@ -127,6 +127,11 @@ def autocomplete(request):
 # Contact
 # ==============================
 def contact(request):
+    # if the feature is toggled off, simply render with notification
+    if not settings.CONTACT_ENABLED:
+        messages.warning(request, "Contact form is temporarily disabled.")
+        return render(request, "contact.html")
+
     if request.method == "POST":
         try:
             name = request.POST.get("name", "").strip()
@@ -148,14 +153,9 @@ def contact(request):
                 messages.error(request, "Phone number is required.")
                 return render(request, "contact.html")
             
-            # Validate phone number is numeric
-            try:
-                phone_int = int(pnumber)
-                if phone_int < 0:
-                    messages.error(request, "Phone number must be a valid positive number.")
-                    return render(request, "contact.html")
-            except ValueError:
-                messages.error(request, "Phone number must be numeric.")
+            # Basic sanity check: allow digits, + and - characters
+            if not all(ch.isdigit() or ch in "+-" for ch in pnumber):
+                messages.error(request, "Phone number contains invalid characters.")
                 return render(request, "contact.html")
             
             # Create contact
@@ -163,7 +163,7 @@ def contact(request):
                 name=name,
                 email=email,
                 desc=desc,
-                phonenumber=phone_int
+                phonenumber=pnumber
             )
             contact_obj.full_clean()  # Validate model fields
             contact_obj.save()

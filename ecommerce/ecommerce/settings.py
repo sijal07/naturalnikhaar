@@ -150,6 +150,9 @@ DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL", "Natural Nikhaar <no-reply@naturalnikhaar.com>"
 )
 
+# toggle for contact form availability
+CONTACT_ENABLED = os.getenv("CONTACT_ENABLED", "True").strip().lower() == "true"
+
 # Optional console backend switch (you can ignore for local)
 if os.getenv("USE_CONSOLE_EMAIL", "false").strip().lower() == "true":
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
